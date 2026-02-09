@@ -17,4 +17,4 @@ RunCycles is the execution layer for the **Cycles Protocol**. We provide the hig
 Check out our [Documentation](https://runcycles.dev) or dive into the [Spring Boot Starter](https://github.com/runcycles/cycles-spring-boot-starter).
 
 ---
-[Website](https://runcycles.ai) • [Documentation](https://runcycles.dev) • [X / Twitter](https://x.com/RunCyclesAI)
+[Read Manifesto](https://github.com/runcycles/.github/blob/main/MANIFESTO.md)
