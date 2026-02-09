@@ -73,7 +73,7 @@ SDKs are clients of the protocol—not special cases.
 
 ---
 
-## Web3 & External Systems
+## External Systems & Web3
 
 RunCycles integrates cleanly with:
 - EVM-compatible networks (Ethereum, Base, others)
