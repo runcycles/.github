@@ -1,345 +1,289 @@
 # The Cycles Manifesto
 
-### Risk Accounting for Autonomous Systems
+## Deterministic Exposure Governance for Autonomous Systems
 
----
+### The shift
 
-## The Premise
+Software used to compute.  
+Now it acts.
 
-Autonomous systems are crossing a threshold.
+It writes to databases, calls models, invokes tools, triggers payments, places trades, deploys infrastructure, sends messages, and creates side effects that cannot be undone.
 
-They no longer just compute.
-They **act**.
+Once systems become actors, execution is no longer just a performance problem.
 
-They write to databases.
-They trigger payments and trades.
-They deploy infrastructure.
-They send messages.
-They create irreversible side effects.
+It becomes an **exposure problem**.
 
-Yet we still govern them as if all actions were equal.
+### The failure of current controls
 
-They are not.
+Most autonomous systems today are governed with:
 
----
+- rate limits
+- retries
+- timeouts
+- quotas
+- heuristics
 
-## The Problem
+These controls answer an important question:
 
-Today, autonomous agents are governed with:
+**How fast can the system act?**
 
-* rate limits
-* retries
-* timeouts
-* heuristics
+They do not answer the more important one:
 
-These controls answer one question:
+**How much exposure is the system allowed to create?**
 
-**How often can the system act?**
+A read is not a write.  
+A retry is not a trade.  
+A suggestion is not a deployment.  
+An LLM call is not the same as a payment instruction.
 
-They do not answer the more important question:
+Treating all actions as equivalent is manageable in simple software. In autonomous systems, it is how small errors become unbounded outcomes.
 
-**How much exposure does this action create?**
+### The missing primitive
 
-A read is not a write.
-A retry is not a trade.
-A suggestion is not a deployment.
+Human institutions scale because they account before they enforce.
 
-Treating them as equivalent is how systems fail quietly—until they fail catastrophically.
+They establish budgets, approvals, limits, ledgers, and accountability.
 
----
+Autonomous systems need the same discipline.
 
-## The Insight
+Before you can enforce exposure, you must account for it.  
+Before you can budget it, you must name the unit.  
+Before you can trust autonomy, you must make its downside legible.
 
-Risk is not uniform.
+### What Cycles are
 
-Human organizations scale because they **account for exposure before enforcing control**:
+**Cycles are operator-defined units of bounded autonomous exposure.**
 
-* budgets
-* approvals
-* limits
-* accountability
+A Cycle is not a token count.  
+It is not latency.  
+It is not compute time.  
+It is not a cloud bill.
 
-Before you can control risk, you must **measure** it.
-Before you can enforce limits, you must **name the unit**.
+A Cycle is a normalized accounting unit used to govern actions that create cost, side effects, or irreversible consequences.
 
-Autonomous systems require the same discipline.
+You decide what consumes Cycles. That may include:
 
----
+- model usage
+- external API calls
+- database writes
+- deletions
+- workflow fan-out
+- tool invocations
+- payments
+- trades
+- deployments
+- any action whose downside should be budgeted before execution
 
-## Introducing Cycles
+Cycles do not claim to measure truth. They provide a common unit for **declaring, reserving, consuming, and limiting exposure**.
 
-Cycles are **normalized units of execution risk**.
+### The core execution model
 
-Cycles do **not** measure:
+Cycles introduces a deterministic execution pattern:
 
-* compute
-* latency
-* tokens
-* cost
-
-Cycles measure **blast radius**.
-
-You decide what consumes Cycles:
-
-* database writes
-* payments
-* trades
-* deletions
-* deployments
-* external API calls
-* any irreversible or high-impact side effect
-
-Cycles make risk:
-
-* explicit
-* comparable
-* visible
-* discussable
-
----
-
-## Cycles Is an Accounting Layer First
-
-Cycles begins with **deterministic risk accounting**, not control.
-
-In v0, Cycles provides:
-
-* a protocol for declaring intent
-* a mechanism for reserving exposure
-* a guarantee against double-spend under retries
-* a consistent view of “what was allowed, what was consumed, and where”
-
-This is not a policy engine.
-This is not an AI safety system.
-
-It is an **exposure ledger for autonomous execution**.
-
----
-
-## Deterministic Exposure, Not Heuristics
-
-Cycles introduces a simple but powerful model:
-
-1. **Declare intent** (estimate risk)
-2. **Reserve exposure** atomically across scopes
+1. **Declare intent**
+2. **Reserve exposure**
 3. **Execute**
-4. **Commit actual impact** or release unused exposure
+4. **Commit actual usage or release the remainder**
 
-This reserve → commit pattern ensures:
+This is the core invariant.
 
-* no double-charging
-* no race conditions
-* no hidden overages
-* no silent runaway behavior
+Autonomous systems should not discover their exposure only after execution. They should reserve bounded room to act before they act.
 
-Retries become safe.
-Failures become bounded.
-Concurrency becomes tractable.
+This model makes critical properties possible:
 
----
+- bounded execution under concurrency
+- safe retries without double-spend
+- explicit attribution of consumption
+- hierarchical enforcement across scopes
+- visibility into what was allowed, used, denied, or exceeded
 
-## Scopes, Not Global Limits
+This is not a metaphor. It is an accounting discipline for agent runtimes.
 
-Risk is contextual.
+### Why reserve/commit matters
 
-Cycles accounts for exposure across **hierarchical scopes**, such as:
+Without reservation, budgets are advisory.
 
-* tenant
-* workspace
-* application
-* workflow
-* agent
-* tool
+Without commit/release, estimates and actuals collapse into guesswork.
 
-These scopes are **derived, not guessed**.
-They allow the same system to be safe at one level and constrained at another.
+Without deterministic accounting, retries, loops, fan-out, and concurrency create hidden overages that are hard to attribute and impossible to govern cleanly.
 
-Cycles does not impose one taxonomy.
-It provides a **common shape** for reasoning about exposure.
+Reserve/commit changes that.
 
----
+It turns:
 
-## Enforcement Is Progressive
+- “we hope this agent stays within bounds”
 
-Cycles does not assume total control on day one.
+into:
 
-Instead:
+- “this agent had this much exposure reserved, consumed this much, and returned the rest”
 
-* some actions are enforced
-* some actions are observed
-* all actions are accounted for
+That is the difference between observability and control.
 
-Where enforcement exists, Cycles can block execution.
-Where it does not, Cycles still records the exposure.
+### Exposure is contextual
 
-The gap becomes visible.
-Visibility drives discipline.
+There is no single global budget that makes autonomous systems safe.
 
-This mirrors how durable systems evolve:
+Exposure exists across scopes such as:
 
-**accounting → budgets → enforcement → markets**
+- tenant
+- workspace
+- environment
+- application
+- workflow
+- agent
+- tool
+- run
 
-Cycles starts where all durable systems start: **legibility**.
+A system may be safe at one level and dangerous at another.
 
----
+Cycles is designed for **hierarchical exposure governance**. It allows limits to be reasoned about locally and enforced consistently across parent scopes, rather than hidden inside isolated services and ad hoc checks.
 
-## Soft Landings, Not Hard Stops
+### Accounting first, enforcement next
 
-Not every limit should be a wall.
+Cycles begins with accounting.
 
-Cycles supports **soft constraints**:
+Not every environment is ready for hard enforcement on day one.
 
-* caps
-* cooldowns
-* allowlists / denylists
-* reduced capabilities
+So Cycles supports a progression:
 
-Instead of killing autonomy, systems can degrade gracefully:
+**accounting → budgets → enforcement → settlement**
 
-* smaller models
-* fewer tools
-* reduced scope
-* slower execution
+Some teams need visibility before denial.  
+Some need shadow mode before rollout.  
+Some need soft constraints before hard stops.
 
-This is how humans manage risk.
-Autonomous systems deserve the same nuance.
+Durable governance systems do not begin with absolute control. They begin with legibility.
 
----
+Cycles makes exposure visible first, so enforcement can become explicit later.
 
-## Shadow Mode Is a First-Class Concept
+### Soft constraints matter
 
-Cycles supports **shadow evaluation**.
+Not every violation should terminate execution.
 
-Systems can:
+Good governance is not only about blocking. It is about degrading safely.
 
-* simulate reservations
-* exercise full decision paths
-* observe what *would* have been charged
-* without moving real exposure
+That may mean:
 
-This enables:
+- routing to smaller models
+- disabling specific tools
+- reducing concurrency
+- shrinking scope
+- enforcing cooldowns
+- moving from write-capable to read-only behavior
 
-* safe rollouts
-* budget tuning
-* production validation
-* confidence before enforcement
+Autonomous systems should fail with bounded consequence, not binary collapse.
 
-You don’t learn risk by guessing.
-You learn it by measuring safely.
+### Shadow mode is essential
 
----
+You do not learn autonomous exposure by debating it in the abstract.
 
-## Cycles Is a Protocol Before It Is an SDK
+You learn it by observing real workloads safely.
 
-Cycles is **protocol-first**.
+Cycles supports shadow evaluation so teams can:
 
-It is designed to be:
+- simulate reservations
+- estimate budget needs
+- compare expected versus actual usage
+- validate policies before enforcement
+- instrument production systems without immediate disruption
 
-* language-agnostic
-* runtime-independent
-* implementation-neutral
+That makes governance adoptable.
 
-Java, Python, Rust, and others are **clients**, not authorities.
+### Protocol first
 
-The protocol defines the invariants.
-SDKs exist to make those invariants easy to use.
+Cycles is protocol-first because the authority must be independent of the runtime.
 
----
+Java, Python, Rust, TypeScript, and other SDKs are clients. They are not the source of truth.
 
-## Cycles Is a Language Before It Is a Market
+The protocol defines the invariants:
 
-Standards don’t spread by selling features.
-They spread by changing how people **talk**.
+- how exposure is declared
+- how it is reserved
+- how it is committed
+- how it is released
+- how it is attributed across scopes
+- how retries remain safe
 
-When teams say:
+This is what makes Cycles portable across runtimes, frameworks, and agent architectures.
 
-* “this agent is cycle-heavy”
-* “that workflow burned too much exposure”
-* “we need a tighter cycle budget here”
-
-A new mental model has formed.
-
-Language precedes enforcement.
-Enforcement precedes settlement.
-Settlement precedes markets.
-
-Cycles starts with language.
-
----
-
-## What Cycles Is Not
+### What Cycles is not
 
 Cycles is not:
 
-* a billing system
-* a token
-* a rewards scheme
-* a speculation asset
-* an AI safety guarantee
+- a billing dashboard
+- a token
+- a rewards scheme
+- a speculation asset
+- a vague AI safety claim
+- a promise that autonomous systems will behave perfectly
 
-Cycles does not promise perfect behavior.
+Cycles does not eliminate risk.
 
-Cycles promises **bounded surprise**.
+Cycles makes risk **accountable, bounded, and enforceable**.
 
----
+Its promise is not perfection.
 
-## Why This Matters
+Its promise is **bounded surprise**.
 
-Autonomy without accounting is unstable.
-Accounting without enforcement is incomplete.
-But enforcement without accounting is impossible.
+### Why this matters
+
+Autonomy without accounting is unstable.  
+Accounting without enforcement is incomplete.  
+Enforcement without accounting is arbitrary.
+
+As autonomous systems move from chat to action, they need more than retries and rate limits. They need a control layer that can budget consequence before execution and reconcile actual usage afterward.
+
+That is what Cycles provides.
 
 Cycles turns:
 
-* hope into limits
-* surprises into dashboards
-* chaos into budgets
+- hidden exposure into explicit budgets
+- retries into safe accounting events
+- concurrency into bounded execution
+- runaway behavior into visible limit breaches
+- autonomy into something institutions can actually operate
 
-It allows **more autonomy**, not less—
-because the downside is visible, measurable, and bounded.
+### The long view
 
----
+If Cycles succeeds, it may evolve over time:
 
-## The Long View
+- from accounting to budgeting
+- from budgeting to enforcement
+- from enforcement to settlement
+- from local controls to interoperable autonomous commerce
 
-Over time, Cycles may evolve:
+None of that is assumed.
 
-* from accounting → budgets
-* from budgets → enforcement
-* from enforcement → settlement
-* from settlement → agent-to-agent commerce
+It must be earned through use, clarity, and correctness.
 
-None of this is assumed.
-All of it must be earned.
+The protocol should harden through real workloads, not hype.
 
----
+### The principle
 
-## The Principle
+You cannot govern what you do not account for.  
+You cannot scale autonomy without bounded exposure.  
+You cannot make exposure enforceable without a unit.
 
-You cannot control what you cannot account for.
-You cannot scale autonomy without a unit of risk.
+**Cycles is that unit.**
 
-Cycles is that unit.
+### The commitment
 
----
+We commit to keeping Cycles:
 
-## The Commitment
+- neutral
+- explicit
+- implementation-independent
+- operationally legible
+- resistant to speculative distraction
 
-We commit to:
+If Cycles becomes opaque, arbitrary, or merely theatrical, it has failed.
 
-* keep Cycles neutral
-* keep enforcement explicit
-* avoid premature economics
-* let the protocol harden through use, not hype
+### Closing
 
-If Cycles ever becomes opaque, arbitrary, or speculative—it has failed.
+Autonomous systems are becoming economic and operational actors.
 
----
+Actors require limits.  
+Limits require accounting.  
+Accounting requires a unit.
 
-## The Closing
-
-Autonomous systems are becoming actors.
-Actors require limits.
-Limits require accounting.
-
-**Cycles is the accounting layer for agentic risk.**
+**Cycles is the accounting and governance layer for bounded autonomous execution.**
