@@ -6,6 +6,15 @@ RunCycles is the execution and control layer for systems governed by **Cycles** 
 
 It helps teams prevent runaway spend, uncontrolled retries, unsafe tool loops, and unbounded side effects by requiring exposure to be **reserved before execution** and **committed or released afterward**.
 
+## Start here
+
+New to Cycles? Start with the protocol, then pick the implementation surface you need.
+
+- **Specification:** [cycles-protocol](https://github.com/runcycles/cycles-protocol) — protocol definitions, semantics, and API contract
+- **Runtime server:** [cycles-server](https://github.com/runcycles/cycles-server) — reference enforcement server for reservations, commits, releases, and balances
+- **Admin plane:** [cycles-server-admin](https://github.com/runcycles/cycles-server-admin) — tenant, budget, API key, funding, and audit management
+- **Spring integration:** [cycles-spring-boot-starter](https://github.com/runcycles/cycles-spring-boot-starter) — easiest way to integrate Cycles into Spring AI / JVM applications
+
 ## Why RunCycles exists
 
 Autonomous systems do not fail like traditional software.
