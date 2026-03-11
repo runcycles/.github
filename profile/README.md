@@ -126,6 +126,21 @@ RunCycles is useful when you need deterministic control over systems that:
 - need hard boundaries around autonomous execution
 - must distinguish observation from enforcement
 
+## Who RunCycles is for
+
+RunCycles is for teams building autonomous systems that can create meaningful cost, side effects, or operational risk.
+
+Typical users include:
+
+- **AI platform teams** enforcing tenant and workload budgets
+- **Agent developers** building looped or tool-calling workflows
+- **Spring AI / JVM teams** adding hard budget limits to production systems
+- **SaaS teams** needing multi-tenant usage isolation and controls
+- **Infrastructure engineers** handling retries, concurrency, and partial failure safely
+- **Gateway builders** adding reservation and commit semantics to AI traffic
+
+RunCycles is most useful when you need more than rate limits or dashboards — you need **pre-execution budget enforcement**.
+
 ## Quick mental model
 
 Think of RunCycles as a **budget authority for autonomous execution**.
