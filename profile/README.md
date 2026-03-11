@@ -1,10 +1,10 @@
 # RunCycles ⚡️
 
-**Runtime enforcement for the Cycles Protocol.**
+**A budget authority for autonomous execution.**
 
-RunCycles is the execution and control layer for systems governed by **Cycles** — an open protocol for deterministic exposure accounting in autonomous software.
+RunCycles is the runtime enforcement layer for **Cycles** — an open protocol for deterministic exposure accounting in autonomous software.
 
-It helps teams prevent runaway spend, uncontrolled retries, unsafe tool loops, and unbounded side effects by requiring exposure to be **reserved before execution** and **committed or released afterward**.
+It prevents runaway spend, uncontrolled retries, unsafe tool loops, and unbounded side effects by requiring exposure to be **reserved before execution** and **committed or released afterward**.
 
 ## Start here
 
@@ -22,8 +22,8 @@ Autonomous systems do not fail like traditional software.
 They loop.  
 They retry.  
 They fan out across tools and models.  
-They keep running after partial failure.  
-They create costs and side effects that are hard to predict in advance.
+They continue after partial failure.  
+They create costs and side effects that are difficult to predict in advance.
 
 Traditional controls such as rate limits, timeouts, and quotas help manage **velocity**.
 
@@ -54,7 +54,6 @@ It is designed for:
 - long-running agent loops
 - tool-calling workflows
 - multi-step decision systems
-- JVM-based applications
 - environments where retries, crashes, and concurrency are normal
 
 RunCycles turns Cycles from a specification into something you can deploy.
@@ -112,9 +111,9 @@ RunCycles is built for real failure modes:
 
 Observe, simulate, and tune policies before turning on hard enforcement.
 
-### Production-grade runtime behavior
+### Failure-aware enforcement
 
-RunCycles is built for systems where execution is stateful, side effects matter, and correctness under load matters more than happy-path demos.
+RunCycles is designed for systems where retries, crashes, partial completion, and concurrent execution are normal operating conditions.
 
 ## Typical use cases
 
@@ -148,10 +147,9 @@ A production implementation that enforces Cycles semantics efficiently.
 ### SDKs and clients
 Client libraries for integrating Cycles into applications and runtimes.
 
-Current focus includes:
+Current implementation focus includes:
 
 - Java / Spring Boot
-- Python
 
 Additional language support can be added without changing the protocol model.
 
