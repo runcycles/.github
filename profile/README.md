@@ -2,18 +2,18 @@
 
 **A budget authority for autonomous execution.**
 
-RunCycles is the runtime enforcement layer for **Cycles** — an open protocol for deterministic exposure accounting in autonomous software.
+RunCycles is the runtime enforcement layer for **Cycles**, an open protocol for deterministic exposure accounting in autonomous software.
 
 It prevents runaway spend, uncontrolled retries, unsafe tool loops, and unbounded side effects by requiring exposure to be **reserved before execution** and **committed or released afterward**.
 
 ## Start here
 
-New to Cycles? Start with the protocol, then pick the implementation surface you need.
+New to Cycles? Start with the protocol, then choose the implementation surface you need.
 
-- **Specification:** [cycles-protocol](https://github.com/runcycles/cycles-protocol) — protocol definitions, semantics, and API contract
-- **Runtime server:** [cycles-server](https://github.com/runcycles/cycles-server) — reference enforcement server for reservations, commits, releases, and balances
-- **Admin plane:** [cycles-server-admin](https://github.com/runcycles/cycles-server-admin) — tenant, budget, API key, funding, and audit management
-- **Spring integration:** [cycles-spring-boot-starter](https://github.com/runcycles/cycles-spring-boot-starter) — easiest way to integrate Cycles into Spring AI / JVM applications
+- **Cycles Protocol:** [cycles-protocol](https://github.com/runcycles/cycles-protocol) — protocol definitions, semantics, and API contract
+- **Cycles Server:** [cycles-server](https://github.com/runcycles/cycles-server) — reference enforcement server for reservations, commits, releases, and balances
+- **Cycles Admin:** [cycles-server-admin](https://github.com/runcycles/cycles-server-admin) — tenant, budget, API key, funding, and audit management
+- **Spring Client:** [cycles-spring-boot-starter](https://github.com/runcycles/cycles-spring-boot-starter) — easiest way to integrate Cycles into Spring AI / Java apps
 
 ## Why RunCycles exists
 
@@ -49,7 +49,7 @@ Cycles is protocol-first and runtime-agnostic.
 
 RunCycles is a production runtime that enforces Cycles semantics.
 
-It is designed for:
+It is designed for systems with:
 
 - long-running agent loops
 - tool-calling workflows
@@ -151,7 +151,7 @@ Current implementation focus includes:
 
 - Java / Spring Boot
 
-Additional language support can be added without changing the protocol model.
+Additional language clients can be added without changing the protocol.
 
 ## Where RunCycles fits
 
@@ -179,7 +179,7 @@ RunCycles is not:
 - a generic workflow scheduler
 - an AI safety silver bullet
 
-Its purpose is narrower and more operational:
+Its purpose is operational and specific:
 
 **make autonomous exposure explicit, bounded, and enforceable.**
 
