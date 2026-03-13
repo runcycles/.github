@@ -16,7 +16,7 @@ New to Cycles? Start with the protocol, then choose the implementation surface y
 - [cycles-spring-boot-starter](https://github.com/runcycles/cycles-spring-boot-starter) — easiest way to integrate Cycles into Spring AI / Java apps
 - [cycles-python-client](https://github.com/runcycles/cycles-python-client) — integrate Cycles budget and risk control into Python apps
 
-👉 **[Cycles Docs](https://runcycles.github.io/docs)**
+👉Learn more: **[Cycles Docs](https://runcycles.github.io/docs)**
 
 ## Why RunCycles exists
 
