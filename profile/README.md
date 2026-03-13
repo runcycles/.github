@@ -166,6 +166,7 @@ Client libraries for integrating Cycles into applications and runtimes.
 
 Current implementation focus includes:
 
+- Python
 - Java / Spring Boot
 
 Additional language clients can be added without changing the protocol.
