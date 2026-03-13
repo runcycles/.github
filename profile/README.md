@@ -2,9 +2,11 @@
 
 **A budget authority for autonomous execution.**
 
-RunCycles is the runtime enforcement layer for **Cycles**, an open protocol for deterministic exposure accounting in autonomous software.
+RunCycles is the runtime enforcement layer for **Cycles** — an open protocol for deterministic exposure accounting in autonomous software.
 
-It prevents runaway spend, uncontrolled retries, unsafe tool loops, and unbounded side effects by requiring exposure to be **reserved before execution** and **committed or released afterward**.
+It stops runaway spend, uncontrolled retries, unsafe tool loops, and unbounded side effects by enforcing one rule:
+
+**reserve exposure before execution, then commit actual usage or release the remainder afterward.**
 
 ## Start here
 
@@ -16,7 +18,7 @@ New to Cycles? Start with the protocol, then choose the implementation surface y
 - [cycles-spring-boot-starter](https://github.com/runcycles/cycles-spring-boot-starter) — easiest way to integrate Cycles into Spring AI / Java apps
 - [cycles-python-client](https://github.com/runcycles/cycles-python-client) — integrate Cycles budget and risk control into Python apps
 
-👉Learn more: **[Cycles Docs](https://runcycles.github.io/docs)**
+👉 Learn more: **[Cycles Docs](https://runcycles.github.io/docs)**
 
 ## Why RunCycles exists
 
@@ -28,7 +30,7 @@ They fan out across tools and models.
 They continue after partial failure.  
 They create costs and side effects that are difficult to predict in advance.
 
-Traditional controls such as rate limits, timeouts, and quotas help manage **velocity**.
+Traditional controls like rate limits, timeouts, and quotas help manage **velocity**.
 
 They do not reliably bound **total exposure**.
 
@@ -40,7 +42,7 @@ RunCycles exists to enforce bounded execution under real production conditions.
 
 It defines:
 
-- reserve → commit / release semantics for actions
+- reserve → commit / release semantics
 - hierarchical scopes for budgets and policy inheritance
 - idempotent behavior under retries and concurrency
 - shadow evaluation before hard enforcement
@@ -52,30 +54,30 @@ Cycles is protocol-first and runtime-agnostic.
 
 RunCycles is a production runtime that enforces Cycles semantics.
 
-It is designed for systems with:
+It is built for systems with:
 
 - long-running agent loops
 - tool-calling workflows
 - multi-step decision systems
-- environments where retries, crashes, and concurrency are normal
+- normal retries, crashes, and concurrency
 
 RunCycles turns Cycles from a specification into something you can deploy.
 
 ## How it works
 
-At a high level, RunCycles enforces a simple execution pattern:
+At a high level, RunCycles enforces a simple pattern:
 
 1. **Declare intent**
 2. **Reserve exposure**
 3. **Execute**
 4. **Commit actual usage or release the remainder**
 
-This model makes it possible to:
+This makes it possible to:
 
 - stop work before budgets are exceeded
 - avoid double-spend under retries
-- account for actual vs estimated usage
-- apply limits across parent and child scopes
+- reconcile actual vs estimated usage
+- enforce limits across parent and child scopes
 - observe and tune policies before blocking production traffic
 
 ## What RunCycles enforces
@@ -98,7 +100,7 @@ Apply budgets across scopes such as:
 - tool
 - run
 
-A request can be evaluated against local limits and inherited parent limits.
+A request can be evaluated against both local limits and inherited parent limits.
 
 ### Idempotency under retries and concurrency
 
@@ -112,11 +114,11 @@ RunCycles is built for real failure modes:
 
 ### Shadow mode and progressive rollout
 
-Observe, simulate, and tune policies before turning on hard enforcement.
+Simulate, observe, and tune policies before turning on hard enforcement.
 
 ### Failure-aware enforcement
 
-RunCycles is designed for systems where retries, crashes, partial completion, and concurrent execution are normal operating conditions.
+RunCycles is designed for systems where retries, crashes, partial completion, and concurrency are normal operating conditions.
 
 ## Typical use cases
 
@@ -198,7 +200,7 @@ RunCycles is not:
 - a generic workflow scheduler
 - an AI safety silver bullet
 
-Its purpose is operational and specific:
+Its purpose is specific:
 
 **make autonomous exposure explicit, bounded, and enforceable.**
 
@@ -231,10 +233,10 @@ RunCycles is built around a few core ideas:
 
 RunCycles is under active development.
 
-The protocol is stabilizing through real implementation work and is intended to evolve with strong compatibility discipline as it moves toward v1.
+The protocol is stabilizing through real implementation work and will evolve with strong compatibility discipline as it moves toward v1.
 
 ## Learn more
 
 - [Cycles Manifesto](./MANIFESTO.md)
 
-If you are building autonomous systems and need deterministic control over their exposure, RunCycles is the runtime layer for that job.
+If you are building autonomous systems and need deterministic control over exposure, RunCycles is the runtime layer for that job.
