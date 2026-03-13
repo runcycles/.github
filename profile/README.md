@@ -4,9 +4,13 @@
 
 RunCycles is the runtime enforcement layer for **Cycles** — an open protocol for deterministic exposure accounting in autonomous software.
 
-It stops runaway spend, uncontrolled retries, unsafe tool loops, and unbounded side effects by enforcing one rule:
+It enforces one rule:
 
 **reserve exposure before execution, then commit actual usage or release the remainder afterward.**
+
+👉 **Start with [Cycles Docs](https://runcycles.github.io/docs)**  
+👉 **Read the [Protocol](https://github.com/runcycles/cycles-protocol)**  
+👉 **Deploy the [Reference Server](https://github.com/runcycles/cycles-server)**
 
 ## Start here
 
