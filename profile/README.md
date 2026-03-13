@@ -238,5 +238,6 @@ The protocol is stabilizing through real implementation work and will evolve wit
 ## Learn more
 
 - [Cycles Manifesto](./MANIFESTO.md)
+- [Cycles Docs and API Reference](https://runcycles.github.io/docs)
 
 If you are building autonomous systems and need deterministic control over exposure, RunCycles is the runtime layer for that job.
