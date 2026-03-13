@@ -1,4 +1,4 @@
-# RunCycles ⚡️
+# RunCycles — Rein in autonomous chaos ⚡️
 
 **A budget authority for autonomous execution.**
 
