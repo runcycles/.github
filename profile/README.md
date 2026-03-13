@@ -14,6 +14,7 @@ New to Cycles? Start with the protocol, then choose the implementation surface y
 - [cycles-server](https://github.com/runcycles/cycles-server) — reference enforcement server for reservations, commits, releases, and balances
 - [cycles-server-admin](https://github.com/runcycles/cycles-server-admin) — tenant, budget, API key, funding, and audit management
 - [cycles-spring-boot-starter](https://github.com/runcycles/cycles-spring-boot-starter) — easiest way to integrate Cycles into Spring AI / Java apps
+- [cycles-python-client](https://github.com/runcycles/cycles-python-client) — integrate Cycles budget and risk control into Python apps
 
 👉 **[runcycles.github.io/docs](https://runcycles.github.io/docs)**
 
