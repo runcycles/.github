@@ -6,7 +6,7 @@
 
 **cycles-server** — Reference implementation bugs and Lua script behavior. If the Redis-backed server isn't enforcing the protocol correctly, or a Lua script has a race condition or logic error, file issues and PRs here.
 
-**cycles-spring-boot-starter** — The `@Cycles` annotation, lifecycle management, and Spring AI integration. Changes to how the starter auto-configures, intercepts methods, or integrates with Spring AI tool calling belong here.
+**cycles-spring-boot-starter** — The `@Cycles` annotation, lifecycle management, and Spring Boot auto-configuration. Changes to how the starter intercepts methods via AOP, evaluates SpEL expressions, or manages reservation context belong here.
 
 **cycles-client-python** — The `@cycles` decorator, async client, and lifecycle management. Changes to how the Python SDK decorates functions, manages async reservation flows, or handles cycle commit/release belong here.
 
@@ -45,7 +45,7 @@ pip install -r agent/requirements.txt && ./demo.sh guarded
 
 ## Protocol Authority
 
-`cycles-protocol-v0.yaml` is the source of truth. Client behavior follows the spec, not the other way around. Any change to protocol semantics requires a spec change first — implementations then update to match. `AUDIT.md` files in each client repo document conformance against the spec and should be kept current as the protocol evolves.
+`cycles-protocol-v0.yaml` is the source of truth. Client behavior follows the spec, not the other way around. Any change to protocol semantics requires a spec change first — implementations then update to match. `AUDIT.md` files in client repos (where present) document conformance against the spec and should be kept current as the protocol evolves.
 
 ## PR Expectations
 
