@@ -1,2 +1,2 @@
 ## RunCycles — Rein in autonomous chaos ⚡️
-See [README](./profile/README.md)
+See [RunCycles README](./profile/README.md)
