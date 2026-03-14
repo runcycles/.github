@@ -24,39 +24,49 @@
 ```
 npm ci && make validate
 ```
-This runs Spectral linting against `cycles-protocol-v0.yaml` and fails on errors.
+Runs Spectral linting against `cycles-protocol-v0.yaml` and fails on errors.
 
 **Python (cycles-client-python):**
 ```
-pip install -e ".[dev]" && pytest --cov runcycles --cov-fail-under=85
+pip install -e ".[dev]"
+ruff check .
+mypy runcycles
+pytest --cov runcycles --cov-fail-under=85
 ```
+CI runs all three checks (ruff, mypy, pytest) on Python 3.10 and 3.12.
 
 **TypeScript (cycles-client-typescript):**
 ```
-npm ci && npm run test:coverage
+npm ci
+npm run typecheck
+npm run lint
+npm run test:coverage
 ```
+CI runs typecheck, eslint, build, and vitest on Node 20 and 22. Coverage thresholds: 95% lines, 85% branches.
 
 **Java server (cycles-server):**
 ```
 cd cycles-protocol-service && mvn test
 ```
+Tests require Docker — TestContainers starts Redis automatically. For the full integration suite: `mvn verify -P integration-tests`.
 
 **Admin server (cycles-server-admin):**
 ```
-cd cycles-admin-service && mvn verify -P integration-tests
+cd cycles-admin-service && mvn test
 ```
-Integration tests require Docker (TestContainers spins up Redis automatically).
+Unit tests run without Docker. For integration tests (requires Docker/TestContainers for Redis): `mvn verify -P integration-tests`.
 
 **Spring starter (cycles-spring-boot-starter):**
 ```
 cd cycles-client-java-spring && mvn verify
 ```
+All tests are mock-based — no Docker required. JaCoCo enforces 85% instruction coverage.
 
 **Docs (docs):**
 ```
 npm ci && npm run build
 ```
-This converts the OpenAPI spec to markdown and builds the VitePress site. Use `npm run dev` for local preview.
+Converts the OpenAPI spec to markdown and builds the VitePress site. Use `npm run dev` for local preview.
 
 **Demo (cycles-runaway-demo):**
 ```
@@ -72,3 +82,4 @@ pip install -r agent/requirements.txt && ./demo.sh guarded
 - Include unit tests for any new behavior.
 - Update `AUDIT.md` if the change touches protocol surface (new fields, changed lifecycle steps, altered semantics).
 - Update `README.md` if the public API changed (new exports, renamed functions, changed signatures).
+- Run the full lint and test suite for your repo before opening a PR — CI will gate on it.
