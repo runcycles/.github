@@ -6,6 +6,8 @@
 
 **cycles-server** — Reference implementation bugs and Lua script behavior. If the Redis-backed server isn't enforcing the protocol correctly, or a Lua script has a race condition or logic error, file issues and PRs here.
 
+**cycles-server-admin** — Administrative API for budget governance. Changes to budget CRUD operations, tenant/workspace/app hierarchy management, Redis key structure, or the admin OpenAPI spec belong here.
+
 **cycles-spring-boot-starter** — The `@Cycles` annotation, lifecycle management, and Spring Boot auto-configuration. Changes to how the starter intercepts methods via AOP, evaluates SpEL expressions, or manages reservation context belong here.
 
 **cycles-client-python** — The `@cycles` decorator, async client, and lifecycle management. Changes to how the Python SDK decorates functions, manages async reservation flows, or handles cycle commit/release belong here.
@@ -17,6 +19,12 @@
 **cycles-runaway-demo** — Demo improvements and GIF re-recording. If the runaway-agent demo needs updated scenarios, better output formatting, or refreshed terminal recordings, this is the repo.
 
 ## Running Tests
+
+**Protocol spec (cycles-protocol):**
+```
+npm ci && make validate
+```
+This runs Spectral linting against `cycles-protocol-v0.yaml` and fails on errors.
 
 **Python (cycles-client-python):**
 ```
@@ -33,10 +41,22 @@ npm ci && npm run test:coverage
 cd cycles-protocol-service && mvn test
 ```
 
+**Admin server (cycles-server-admin):**
+```
+cd cycles-admin-service && mvn verify -P integration-tests
+```
+Integration tests require Docker (TestContainers spins up Redis automatically).
+
 **Spring starter (cycles-spring-boot-starter):**
 ```
 cd cycles-client-java-spring && mvn verify
 ```
+
+**Docs (docs):**
+```
+npm ci && npm run build
+```
+This converts the OpenAPI spec to markdown and builds the VitePress site. Use `npm run dev` for local preview.
 
 **Demo (cycles-runaway-demo):**
 ```
