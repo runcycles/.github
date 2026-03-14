@@ -6,7 +6,7 @@
 
 **RunCycles** enforces those rules in production — atomically, under concurrency, across retries.
 
-Think: HTTP is the protocol. RunCycles is your server.
+>Think: **Cycles** is an open protocol. **RunCycles** is your server.
 
 RunCycles enforces one rule:
 
