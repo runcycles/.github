@@ -3,6 +3,7 @@
 **The production runtime for the Cycles protocol.**
 
 **Cycles** defines how agents reserve budget, commit spend, and release unused reservations. 
+
 **RunCycles** enforces those rules in production — atomically, under concurrency, across retries.
 
 Think: HTTP is the protocol. RunCycles is your server.
