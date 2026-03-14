@@ -24,7 +24,7 @@ New to Cycles? Start with the protocol, then choose the implementation surface y
 - [cycles-spring-boot-starter](https://github.com/runcycles/cycles-spring-boot-starter) — easiest way to integrate Cycles into Spring AI / Java apps
 - [cycles-client-python](https://github.com/runcycles/cycles-client-python) — integrate Cycles budget and risk control into Python apps
 - [cycles-client-typescript](https://github.com/runcycles/cycles-client-typescript) — budget and risk control for Node.js / Vercel AI / LangChain/ OpenAI
-- [cycles-runaway-demo](https://github.com/runcycles/cycles-runaway-demo)
+- [cycles-runaway-demo](https://github.com/runcycles/cycles-runaway-demo) — self-contained demo showing a runaway agent failure mode and RunCycles stopping it
 
 👉 Learn more: **[Cycles Docs](https://runcycles.github.io/docs)**
 
