@@ -1,10 +1,13 @@
 # RunCycles — Rein in autonomous chaos ⚡️
 
-**A budget authority for autonomous execution.**
+**The production runtime for the Cycles protocol.**
 
-**RunCycles** is the runtime enforcement layer for **Cycles** — an open protocol for deterministic exposure accounting in autonomous software.
+**Cycles** defines how agents reserve budget, commit spend, and release unused reservations. 
+**RunCycles** enforces those rules in production — atomically, under concurrency, across retries.
 
-It enforces one rule:
+Think: HTTP is the protocol. RunCycles is your server.
+
+RunCycles enforces one rule:
 
 **reserve exposure before execution, then commit actual usage or release the remainder afterward.**
 
