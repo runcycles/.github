@@ -75,7 +75,7 @@ pip install -r agent/requirements.txt && ./demo.sh guarded
 
 ## Protocol Authority
 
-`cycles-protocol-v0.yaml` is the source of truth. Client behavior follows the spec, not the other way around. Any change to protocol semantics requires a spec change first — implementations then update to match. `AUDIT.md` files in client repos (where present) document conformance against the spec and should be kept current as the protocol evolves.
+`cycles-protocol-v0.yaml` is the source of truth. Client behavior follows the spec, not the other way around. Any change to protocol semantics requires a spec change first — implementations then update to match. `AUDIT.md` files in each client repo document conformance against the spec and should be kept current as the protocol evolves.
 
 ## PR Expectations
 
