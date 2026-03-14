@@ -177,9 +177,9 @@ Client libraries for integrating Cycles into applications and runtimes.
 
 Current implementation focus includes:
 
-- Python
-- TypeScript Node.js / Next.js
-- Java / Spring Boot
+- [Python](https://github.com/runcycles/cycles-client-python)
+- [TypeScript Node.js / Next.js](https://github.com/runcycles/cycles-client-typescript)
+- [Java / Spring Boot](https://github.com/runcycles/cycles-spring-boot-starter)
 
 Additional language clients can be added without changing the protocol.
 
