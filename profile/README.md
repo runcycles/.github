@@ -31,6 +31,7 @@ New to Cycles? Start with the protocol, then choose the implementation surface y
 - [cycles-mcp-server](https://github.com/runcycles/cycles-mcp-server) — MCP server that gives AI agents runtime budget control — reserve, commit, and release.
 - [cycles-openclaw-budget-guard](https://github.com/runcycles/cycles-openclaw-budget-guard) — OpenClaw plugin for budget-aware model and tool execution using Cycles
 - [cycles-runaway-demo](https://github.com/runcycles/cycles-runaway-demo) — self-contained demo showing a runaway agent failure mode and Runcycles stopping it
+- [cycles-action-authority-demo](https://github.com/runcycles/cycles-action-authority-demo) — self-contained demo showing Cycles stopping next email, CRM action
 
 👉 Learn more: **[Cycles Docs](https://runcycles.github.io/docs)**
 
