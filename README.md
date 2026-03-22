@@ -1,2 +1,2 @@
-## Cycles — Rein in autonomous chaos ⚡️
-See [Cycles README](./profile/README.md)
+## Runcycles — Rein in autonomous chaos ⚡️
+See [Runcycles README](./profile/README.md)
