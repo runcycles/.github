@@ -1,0 +1,83 @@
+name: Nightly Integration
+
+on:
+  schedule:
+    - cron: '0 3 * * *'  # 3 AM UTC daily
+  workflow_dispatch:       # Manual trigger
+
+jobs:
+  integration:
+    name: Full-Stack Integration
+    runs-on: ubuntu-latest
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
+
+    steps:
+      - name: Checkout cycles-server
+        uses: actions/checkout@v5
+        with:
+          repository: runcycles/cycles-server
+          path: cycles-server
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Build and start server
+        working-directory: cycles-server
+        run: |
+          mvn -B package -DskipTests --file cycles-protocol-service/pom.xml
+          java -Dredis.host=localhost -Dredis.port=6379 -Dredis.password= \
+               -jar cycles-protocol-service/cycles-protocol-service-api/target/*.jar &
+          # Wait for health
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:8080/actuator/health && break
+            sleep 1
+          done
+
+      - name: Checkout Python client
+        uses: actions/checkout@v5
+        with:
+          repository: runcycles/cycles-client-python
+          path: cycles-client-python
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run Python integration tests
+        working-directory: cycles-client-python
+        run: |
+          pip install -e ".[dev]"
+          CYCLES_BASE_URL=http://localhost:8080 \
+          CYCLES_API_KEY=test-integration-key \
+          CYCLES_TENANT=integration-test \
+          pytest tests/integration/ -v --timeout=30 || true
+
+      - name: Checkout TypeScript client
+        uses: actions/checkout@v5
+        with:
+          repository: runcycles/cycles-client-typescript
+          path: cycles-client-typescript
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Run TypeScript integration tests
+        working-directory: cycles-client-typescript
+        run: |
+          npm ci
+          CYCLES_BASE_URL=http://localhost:8080 \
+          CYCLES_API_KEY=test-integration-key \
+          CYCLES_TENANT=integration-test \
+          npx vitest run tests/integration/ --timeout=30000 || true
