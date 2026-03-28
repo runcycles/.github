@@ -23,6 +23,10 @@ on:
         description: 'POM path for mvn compile (multi-module repos, e.g. demo module)'
         type: string
         default: ''
+      maven-args:
+        description: 'Extra arguments to pass to mvn verify (e.g. test exclusions)'
+        type: string
+        default: ''
 
 jobs:
   test:
@@ -43,7 +47,7 @@ jobs:
           cache: maven
 
       - name: Run tests and verify coverage
-        run: mvn -B verify --file ${{ inputs.pom-file }}
+        run: mvn -B verify --file ${{ inputs.pom-file }} ${{ inputs.maven-args }}
 
       - name: Install to local repo (multi-module)
         if: ${{ inputs.extra-steps && inputs.extra-pom-install != '' }}
