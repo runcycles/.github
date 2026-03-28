@@ -1,0 +1,54 @@
+name: Reusable Java CI
+
+on:
+  workflow_call:
+    inputs:
+      java-version:
+        description: 'JDK version to use'
+        type: string
+        default: '21'
+      pom-file:
+        description: 'Path to the POM file (relative to repo root)'
+        type: string
+        required: true
+      extra-steps:
+        description: 'Whether to run extra steps after verify (e.g. multi-module install+compile)'
+        type: boolean
+        default: false
+      extra-pom-install:
+        description: 'POM path for mvn install -DskipTests (multi-module repos)'
+        type: string
+        default: ''
+      extra-pom-compile:
+        description: 'POM path for mvn compile (multi-module repos, e.g. demo module)'
+        type: string
+        default: ''
+
+jobs:
+  test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up JDK ${{ inputs.java-version }}
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: ${{ inputs.java-version }}
+          cache: maven
+
+      - name: Run tests and verify coverage
+        run: mvn -B verify --file ${{ inputs.pom-file }}
+
+      - name: Install to local repo (multi-module)
+        if: ${{ inputs.extra-steps && inputs.extra-pom-install != '' }}
+        run: mvn -B install -DskipTests --file ${{ inputs.extra-pom-install }}
+
+      - name: Compile extra module
+        if: ${{ inputs.extra-steps && inputs.extra-pom-compile != '' }}
+        run: mvn -B compile --file ${{ inputs.extra-pom-compile }}
