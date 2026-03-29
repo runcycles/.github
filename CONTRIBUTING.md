@@ -39,9 +39,9 @@ Runs Spectral linting against `cycles-protocol-v0.yaml` and fails on errors.
 pip install -e ".[dev]"
 ruff check .
 mypy runcycles
-pytest --cov runcycles --cov-fail-under=85
+pytest --cov runcycles --cov-fail-under=95
 ```
-CI runs all three checks (ruff, mypy, pytest) on Python 3.10 and 3.12.
+CI runs all three checks (ruff, mypy, pytest) on Python 3.10 and 3.12. Coverage threshold: 95%.
 
 **TypeScript (cycles-client-typescript):**
 ```
