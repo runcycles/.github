@@ -87,6 +87,15 @@ npm run test:coverage
 ```
 CI runs typecheck, vitest, and build on Node 20 and 22.
 
+**OpenAI Agents SDK (cycles-openai-agents):**
+```
+pip install -e ".[dev]"
+ruff check .
+mypy src
+pytest --cov --cov-fail-under=95
+```
+CI runs ruff, mypy, and pytest on Python 3.10 and 3.12. Coverage threshold: 95%.
+
 **Docs (docs):**
 ```
 npm ci && npm run build
@@ -116,3 +125,23 @@ CI checks Python syntax and shell script syntax. Running the full demo locally r
 - Update `AUDIT.md` if the change touches protocol surface (new fields, changed lifecycle steps, altered semantics).
 - Update `README.md` if the public API changed (new exports, renamed functions, changed signatures).
 - Run the full lint and test suite for your repo before opening a PR — CI will gate on it.
+
+## CI Infrastructure
+
+### Reusable workflows
+
+The `.github` repo hosts three reusable CI workflows under `.github/workflows/`:
+
+- **ci-python.yml** — ruff lint, mypy type check, pytest with coverage. Inputs: `python-versions`, `mypy-target`, `run-lint`.
+- **ci-typescript.yml** — npm ci, typecheck, lint, build, vitest coverage. Inputs: `node-versions`, `run-lint`, `run-build`.
+- **ci-java.yml** — mvn verify with optional multi-module steps. Inputs: `java-version`, `pom-file`, `maven-args`, `extra-steps`.
+
+Consumer repos reference these via `uses: runcycles/.github/.github/workflows/ci-*.yml@main` in their `ci.yml`. Publish jobs stay repo-local.
+
+### Nightly integration test
+
+**integration-nightly.yml** runs daily at 6 AM UTC. It starts Redis + cycles-server, then runs Python and TypeScript client integration tests against the live server. Can be triggered manually via workflow_dispatch.
+
+### Config sync
+
+**scripts/sync-claude-config.sh** copies shared `.claude/session-start-global-deny.sh` from `shared-config/` to all 12 sibling repos. Run with `--dry-run` to preview. The canonical source is `shared-config/session-start-global-deny.sh`.

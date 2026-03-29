@@ -33,8 +33,9 @@ New to Cycles? Start with the protocol, then choose the implementation surface y
 - [cycles-openclaw-budget-guard](https://github.com/runcycles/cycles-openclaw-budget-guard) — OpenClaw plugin for budget-aware model and tool execution using Cycles
 - [cycles-runaway-demo](https://github.com/runcycles/cycles-runaway-demo) — self-contained demo showing a runaway agent failure mode and Runcycles stopping it
 - [cycles-agent-action-authority-demo](https://github.com/runcycles/cycles-agent-action-authority-demo) — self-contained demo showing Cycles stopping agent performing next email, CRM action
+- [docs](https://github.com/runcycles/docs) — documentation site (runcycles.io) with quickstarts, integration guides, and protocol reference
 
-👉 Learn more: **[Cycles Docs](https://runcycles.github.io/docs)**
+👉 Learn more: **[runcycles.io](https://runcycles.io)**
 
 ## Why Runcycles exists
 

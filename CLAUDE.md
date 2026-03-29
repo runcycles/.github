@@ -8,4 +8,4 @@
 # Cycles strict rules
 - yaml API specs always the authority
 - always update AUDIT.md files when making changes to server, admin, client repos
-- maintain at least 95% or higher test coverage for all code repos
+- maintain high test coverage (85%+ minimum, 95%+ for core libraries — see CONTRIBUTING.md for per-repo thresholds)
