@@ -38,7 +38,7 @@ jobs:
                -jar cycles-protocol-service/cycles-protocol-service-api/target/*.jar &
           # Wait for health
           for i in $(seq 1 30); do
-            curl -sf http://localhost:8080/actuator/health && break
+            curl -sf http://localhost:7878/actuator/health && break
             sleep 1
           done
 
@@ -57,7 +57,7 @@ jobs:
         working-directory: cycles-client-python
         run: |
           pip install -e ".[dev]"
-          CYCLES_BASE_URL=http://localhost:8080 \
+          CYCLES_BASE_URL=http://localhost:7878 \
           CYCLES_API_KEY=test-integration-key \
           CYCLES_TENANT=integration-test \
           pytest tests/integration/ -v || true
@@ -77,7 +77,7 @@ jobs:
         working-directory: cycles-client-typescript
         run: |
           npm ci
-          CYCLES_BASE_URL=http://localhost:8080 \
+          CYCLES_BASE_URL=http://localhost:7878 \
           CYCLES_API_KEY=test-integration-key \
           CYCLES_TENANT=integration-test \
           npx vitest run tests/integration/ || true
