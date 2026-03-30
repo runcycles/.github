@@ -80,4 +80,4 @@ jobs:
           CYCLES_BASE_URL=http://localhost:8080 \
           CYCLES_API_KEY=test-integration-key \
           CYCLES_TENANT=integration-test \
-          npx vitest run tests/integration/ --timeout=30000 || true
+          npx vitest run tests/integration/ || true
