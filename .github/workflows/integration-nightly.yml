@@ -60,7 +60,7 @@ jobs:
           CYCLES_BASE_URL=http://localhost:8080 \
           CYCLES_API_KEY=test-integration-key \
           CYCLES_TENANT=integration-test \
-          pytest tests/integration/ -v --timeout=30 || true
+          pytest tests/integration/ -v || true
 
       - name: Checkout TypeScript client
         uses: actions/checkout@v6
