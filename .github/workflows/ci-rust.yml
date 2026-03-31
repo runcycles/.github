@@ -6,7 +6,7 @@ on:
       rust-versions:
         description: 'JSON array of Rust toolchain versions to test'
         type: string
-        default: '["stable", "1.75"]'
+        default: '["stable", "1.88"]'
       run-clippy:
         description: 'Whether to run clippy linting'
         type: boolean
