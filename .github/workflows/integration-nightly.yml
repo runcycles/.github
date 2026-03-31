@@ -75,29 +75,36 @@ jobs:
           ADMIN_KEY=test-admin-key
 
           # Create tenant
-          curl -sf -X POST $ADMIN_URL/v1/admin/tenants \
+          curl -s -X POST $ADMIN_URL/v1/admin/tenants \
             -H "Content-Type: application/json" \
             -H "X-Admin-API-Key: $ADMIN_KEY" \
             -d '{"tenant_id":"integration-test","name":"Integration Test Tenant"}'
+          echo ""
           echo "Tenant created"
 
           # Create API key
-          API_KEY=$(curl -sf -X POST $ADMIN_URL/v1/admin/api-keys \
+          KEY_RESPONSE=$(curl -s -X POST $ADMIN_URL/v1/admin/api-keys \
             -H "Content-Type: application/json" \
             -H "X-Admin-API-Key: $ADMIN_KEY" \
-            -d '{"tenant_id":"integration-test","name":"integration-key","permissions":["reservations:create","reservations:commit","reservations:release","reservations:extend","reservations:list","balances:read"]}' \
-            | jq -r '.key_secret')
+            -d '{"tenant_id":"integration-test","name":"integration-key","permissions":["reservations:create","reservations:commit","reservations:release","reservations:extend","reservations:list","balances:read"]}')
+          echo "Key response: $KEY_RESPONSE"
+          API_KEY=$(echo "$KEY_RESPONSE" | jq -r '.key_secret')
+          if [ -z "$API_KEY" ] || [ "$API_KEY" = "null" ]; then
+            echo "Failed to extract API key"
+            exit 1
+          fi
           echo "API key created: ${API_KEY:0:14}..."
 
           # Export for subsequent steps
           echo "CYCLES_API_KEY=$API_KEY" >> $GITHUB_ENV
 
           # Create budget ($1.00 = 100M USD_MICROCENTS)
-          curl -sf -X POST $ADMIN_URL/v1/admin/budgets \
+          BUDGET_RESPONSE=$(curl -s -w "\nHTTP_CODE:%{http_code}" -X POST $ADMIN_URL/v1/admin/budgets \
             -H "Content-Type: application/json" \
             -H "X-Cycles-API-Key: $API_KEY" \
-            -d '{"scope":"tenant:integration-test","unit":"USD_MICROCENTS","allocated":{"unit":"USD_MICROCENTS","amount":100000000}}'
-          echo "Budget created"
+            -d '{"scope":"tenant:integration-test","unit":"USD_MICROCENTS","allocated":{"unit":"USD_MICROCENTS","amount":100000000}}')
+          echo "Budget response: $BUDGET_RESPONSE"
+          echo "$BUDGET_RESPONSE" | grep -q "HTTP_CODE:2" || { echo "Budget creation failed"; exit 1; }
 
       # ── Python integration tests ───────────────────────────────────
       - name: Checkout Python client
