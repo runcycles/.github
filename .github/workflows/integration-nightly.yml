@@ -106,6 +106,57 @@ jobs:
           echo "Budget response: $BUDGET_RESPONSE"
           echo "$BUDGET_RESPONSE" | grep -q "HTTP_CODE:2" || { echo "Budget creation failed"; exit 1; }
 
+      # ── Spring Boot demo app ────────────────────────────────────────
+      - name: Checkout Spring Boot starter
+        uses: actions/checkout@v6
+        with:
+          repository: runcycles/cycles-spring-boot-starter
+          path: cycles-spring-boot-starter
+
+      - name: Build and start Spring Boot demo app (7955)
+        working-directory: cycles-spring-boot-starter
+        run: |
+          mvn -B package -DskipTests --file cycles-client-java-spring/pom.xml
+          mvn -B package -DskipTests --file cycles-demo-client-java-spring/pom.xml
+          java -Dcycles.base-url=http://localhost:7878 \
+               -Dcycles.api-key=$CYCLES_API_KEY \
+               -Dcycles.tenant=integration-test \
+               -Dcycles.workspace=default \
+               -Dcycles.app=demo \
+               -jar cycles-demo-client-java-spring/target/*.jar &
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:7955/actuator/health && break
+            sleep 1
+          done
+
+      - name: Run Spring Boot integration tests
+        run: |
+          echo "=== @Cycles annotation (minimal) ==="
+          RESULT=$(curl -sf -X POST "http://localhost:7955/api/demo/annotation/minimal?input=hello")
+          echo "$RESULT" | jq .
+          echo "$RESULT" | jq -e '.result' || { echo "Minimal annotation failed"; exit 1; }
+
+          echo "=== Programmatic client (reserve-commit) ==="
+          RESULT=$(curl -sf -X POST "http://localhost:7955/api/demo/client/reserve-commit?amount=5000")
+          echo "$RESULT" | jq .
+          echo "$RESULT" | jq -e '.reservation_id' || { echo "Reserve-commit failed"; exit 1; }
+
+          echo "=== Programmatic client (decide) ==="
+          RESULT=$(curl -sf -X POST "http://localhost:7955/api/demo/client/decide?amount=1000")
+          echo "$RESULT" | jq .
+          echo "$RESULT" | jq -e '.decision' || { echo "Decide failed"; exit 1; }
+
+          echo "=== Balance query ==="
+          RESULT=$(curl -sf "http://localhost:7955/api/demo/client/balances")
+          echo "$RESULT" | jq .
+
+          echo "=== LLM endpoint (annotation + metrics) ==="
+          RESULT=$(curl -sf -X POST "http://localhost:7955/api/llm/generate?prompt=hello&tokens=100")
+          echo "$RESULT" | jq .
+          echo "$RESULT" | jq -e '.result' || { echo "LLM generate failed"; exit 1; }
+
+          echo "Spring Boot integration tests passed"
+
       # ── Python integration tests ───────────────────────────────────
       - name: Checkout Python client
         uses: actions/checkout@v6
