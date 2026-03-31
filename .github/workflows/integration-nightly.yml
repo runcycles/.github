@@ -17,12 +17,20 @@ jobs:
         options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
+      # ── Checkout both servers ──────────────────────────────────────
       - name: Checkout cycles-server
         uses: actions/checkout@v6
         with:
           repository: runcycles/cycles-server
           path: cycles-server
 
+      - name: Checkout cycles-server-admin
+        uses: actions/checkout@v6
+        with:
+          repository: runcycles/cycles-server-admin
+          path: cycles-server-admin
+
+      # ── Build both servers ─────────────────────────────────────────
       - name: Set up JDK 21
         uses: actions/setup-java@v5
         with:
@@ -30,18 +38,68 @@ jobs:
           java-version: '21'
           cache: maven
 
-      - name: Build and start server
+      - name: Build protocol server
+        working-directory: cycles-server
+        run: mvn -B package -DskipTests --file cycles-protocol-service/pom.xml
+
+      - name: Build admin server
+        working-directory: cycles-server-admin
+        run: mvn -B package -DskipTests --file cycles-admin-service/pom.xml
+
+      # ── Start both servers ─────────────────────────────────────────
+      - name: Start protocol server (7878)
         working-directory: cycles-server
         run: |
-          mvn -B package -DskipTests --file cycles-protocol-service/pom.xml
           java -Dredis.host=localhost -Dredis.port=6379 -Dredis.password= \
                -jar cycles-protocol-service/cycles-protocol-service-api/target/*.jar &
-          # Wait for health
           for i in $(seq 1 30); do
             curl -sf http://localhost:7878/actuator/health && break
             sleep 1
           done
 
+      - name: Start admin server (7979)
+        working-directory: cycles-server-admin
+        run: |
+          java -Dredis.host=localhost -Dredis.port=6379 -Dredis.password= \
+               -Dadmin.api-key=test-admin-key -Dserver.port=7979 \
+               -jar cycles-admin-service/cycles-admin-service-api/target/*.jar &
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:7979/actuator/health && break
+            sleep 1
+          done
+
+      # ── Provision test data via admin API ──────────────────────────
+      - name: Provision tenant, API key, and budget
+        run: |
+          ADMIN_URL=http://localhost:7979
+          ADMIN_KEY=test-admin-key
+
+          # Create tenant
+          curl -sf -X POST $ADMIN_URL/v1/admin/tenants \
+            -H "Content-Type: application/json" \
+            -H "X-Admin-API-Key: $ADMIN_KEY" \
+            -d '{"tenant_id":"integration-test","name":"Integration Test Tenant"}'
+          echo "Tenant created"
+
+          # Create API key
+          API_KEY=$(curl -sf -X POST $ADMIN_URL/v1/admin/api-keys \
+            -H "Content-Type: application/json" \
+            -H "X-Admin-API-Key: $ADMIN_KEY" \
+            -d '{"tenant_id":"integration-test","name":"integration-key","permissions":["reservations:create","reservations:commit","reservations:release","reservations:extend","reservations:list","balances:read"]}' \
+            | jq -r '.key_secret')
+          echo "API key created: ${API_KEY:0:14}..."
+
+          # Export for subsequent steps
+          echo "CYCLES_API_KEY=$API_KEY" >> $GITHUB_ENV
+
+          # Create budget ($1.00 = 100M USD_MICROCENTS)
+          curl -sf -X POST $ADMIN_URL/v1/admin/budgets \
+            -H "Content-Type: application/json" \
+            -H "X-Cycles-API-Key: $API_KEY" \
+            -d '{"scope":"tenant:integration-test","unit":"USD_MICROCENTS","allocated":{"unit":"USD_MICROCENTS","amount":100000000}}'
+          echo "Budget created"
+
+      # ── Python integration tests ───────────────────────────────────
       - name: Checkout Python client
         uses: actions/checkout@v6
         with:
@@ -55,13 +113,14 @@ jobs:
 
       - name: Run Python integration tests
         working-directory: cycles-client-python
+        env:
+          CYCLES_BASE_URL: http://localhost:7878
+          CYCLES_TENANT: integration-test
         run: |
-          pip install -e ".[dev]"
-          CYCLES_BASE_URL=http://localhost:7878 \
-          CYCLES_API_KEY=test-integration-key \
-          CYCLES_TENANT=integration-test \
-          pytest tests/integration/ -v || true
+          pip install -e ".[dev]" requests
+          pytest tests/integration/ -v
 
+      # ── TypeScript integration tests ───────────────────────────────
       - name: Checkout TypeScript client
         uses: actions/checkout@v6
         with:
@@ -75,9 +134,9 @@ jobs:
 
       - name: Run TypeScript integration tests
         working-directory: cycles-client-typescript
+        env:
+          CYCLES_BASE_URL: http://localhost:7878
+          CYCLES_TENANT: integration-test
         run: |
           npm ci
-          CYCLES_BASE_URL=http://localhost:7878 \
-          CYCLES_API_KEY=test-integration-key \
-          CYCLES_TENANT=integration-test \
-          npx vitest run tests/integration/ || true
+          npx vitest run tests/integration/
