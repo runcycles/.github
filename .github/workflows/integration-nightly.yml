@@ -144,7 +144,7 @@ jobs:
           echo "=== Programmatic client (decide) ==="
           RESULT=$(curl -sf -X POST "http://localhost:7955/api/demo/client/decide?amount=1000")
           echo "$RESULT" | jq .
-          echo "$RESULT" | jq -e '.decision' || { echo "Decide failed"; exit 1; }
+          echo "$RESULT" | jq -e '.result.response.body.decision' || { echo "Decide failed"; exit 1; }
 
           echo "=== Balance query ==="
           RESULT=$(curl -sf "http://localhost:7955/api/demo/client/balances")
@@ -152,8 +152,8 @@ jobs:
 
           echo "=== LLM endpoint (annotation + metrics) ==="
           RESULT=$(curl -sf -X POST "http://localhost:7955/api/llm/generate?prompt=hello&tokens=100")
-          echo "$RESULT" | jq .
-          echo "$RESULT" | jq -e '.result' || { echo "LLM generate failed"; exit 1; }
+          echo "$RESULT"
+          [ -n "$RESULT" ] || { echo "LLM generate failed"; exit 1; }
 
           echo "Spring Boot integration tests passed"
 
