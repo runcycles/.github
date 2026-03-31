@@ -1,0 +1,70 @@
+name: Reusable Rust CI
+
+on:
+  workflow_call:
+    inputs:
+      rust-versions:
+        description: 'JSON array of Rust toolchain versions to test'
+        type: string
+        default: '["stable", "1.75"]'
+      run-clippy:
+        description: 'Whether to run clippy linting'
+        type: boolean
+        default: true
+      run-fmt:
+        description: 'Whether to check formatting'
+        type: boolean
+        default: true
+      cargo-args:
+        description: 'Extra arguments for cargo test'
+        type: string
+        default: ''
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test (Rust ${{ matrix.rust-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        rust-version: ${{ fromJson(inputs.rust-versions) }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install Rust ${{ matrix.rust-version }}
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ matrix.rust-version }}
+          components: clippy, rustfmt
+
+      - name: Cache cargo registry & build
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ matrix.rust-version }}-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-${{ matrix.rust-version }}-
+
+      - name: Check formatting
+        if: ${{ inputs.run-fmt && matrix.rust-version == 'stable' }}
+        run: cargo fmt --check
+
+      - name: Clippy
+        if: ${{ inputs.run-clippy && matrix.rust-version == 'stable' }}
+        run: cargo clippy --all-targets -- -D warnings
+
+      - name: Run tests
+        run: cargo test ${{ inputs.cargo-args }}
+
+      - name: Install cargo-tarpaulin
+        if: ${{ matrix.rust-version == 'stable' }}
+        run: cargo install cargo-tarpaulin --locked
+
+      - name: Coverage
+        if: ${{ matrix.rust-version == 'stable' }}
+        run: cargo tarpaulin --skip-clean --out Xml --ignore-tests -- --skip live
