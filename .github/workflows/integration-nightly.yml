@@ -139,7 +139,7 @@ jobs:
           echo "=== Programmatic client (reserve-commit) ==="
           RESULT=$(curl -sf -X POST "http://localhost:7955/api/demo/client/reserve-commit?amount=5000")
           echo "$RESULT" | jq .
-          echo "$RESULT" | jq -e '.reservation_id' || { echo "Reserve-commit failed"; exit 1; }
+          echo "$RESULT" | jq -e '.result.reservationId' || { echo "Reserve-commit failed"; exit 1; }
 
           echo "=== Programmatic client (decide) ==="
           RESULT=$(curl -sf -X POST "http://localhost:7955/api/demo/client/decide?amount=1000")
