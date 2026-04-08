@@ -17,7 +17,7 @@ jobs:
         options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
-      # ── Checkout both servers ──────────────────────────────────────
+      # ── Checkout all servers ─────────────────────────────────────
       - name: Checkout cycles-server
         uses: actions/checkout@v6
         with:
@@ -30,7 +30,13 @@ jobs:
           repository: runcycles/cycles-server-admin
           path: cycles-server-admin
 
-      # ── Build both servers ─────────────────────────────────────────
+      - name: Checkout cycles-server-events
+        uses: actions/checkout@v6
+        with:
+          repository: runcycles/cycles-server-events
+          path: cycles-server-events
+
+      # ── Build all servers ──────────────────────────────────────────
       - name: Set up JDK 21
         uses: actions/setup-java@v5
         with:
@@ -46,7 +52,11 @@ jobs:
         working-directory: cycles-server-admin
         run: mvn -B package -DskipTests --file cycles-admin-service/pom.xml
 
-      # ── Start both servers ─────────────────────────────────────────
+      - name: Build event server
+        working-directory: cycles-server-events
+        run: mvn -B package -DskipTests
+
+      # ── Start all servers ──────────────────────────────────────────
       - name: Start protocol server (7878)
         working-directory: cycles-server
         run: |
@@ -68,6 +78,17 @@ jobs:
             sleep 1
           done
 
+      - name: Start event server (7980)
+        working-directory: cycles-server-events
+        run: |
+          java -Dredis.host=localhost -Dredis.port=6379 -Dredis.password= \
+               -Dwebhook.secret.encryption-key= \
+               -jar target/*.jar &
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:7980/actuator/health && break
+            sleep 1
+          done
+
       # ── Provision test data via admin API ──────────────────────────
       - name: Provision tenant, API key, and budget
         run: |
@@ -86,7 +107,7 @@ jobs:
           KEY_RESPONSE=$(curl -s -X POST $ADMIN_URL/v1/admin/api-keys \
             -H "Content-Type: application/json" \
             -H "X-Admin-API-Key: $ADMIN_KEY" \
-            -d '{"tenant_id":"integration-test","name":"integration-key","permissions":["reservations:create","reservations:commit","reservations:release","reservations:extend","reservations:list","balances:read","admin:read","admin:write"]}')
+            -d '{"tenant_id":"integration-test","name":"integration-key","permissions":["reservations:create","reservations:commit","reservations:release","reservations:extend","reservations:list","balances:read","admin:read","admin:write","webhooks:create","webhooks:read","webhooks:write","webhooks:delete","events:read"]}')
           echo "Key response: $KEY_RESPONSE"
           API_KEY=$(echo "$KEY_RESPONSE" | jq -r '.key_secret')
           if [ -z "$API_KEY" ] || [ "$API_KEY" = "null" ]; then
@@ -206,6 +227,78 @@ jobs:
         run: |
           npm ci
           npx vitest run tests/integration/
+
+      # ── Event server integration tests ─────────────────────────────
+      - name: Start webhook receiver
+        run: |
+          python3 -c '
+          from http.server import HTTPServer, BaseHTTPRequestHandler
+          import json, sys
+
+          class Handler(BaseHTTPRequestHandler):
+              received = []
+              def do_POST(self):
+                  length = int(self.headers.get("Content-Length", 0))
+                  body = self.rfile.read(length).decode()
+                  Handler.received.append({
+                      "body": body,
+                      "signature": self.headers.get("X-Cycles-Signature", ""),
+                      "event_type": self.headers.get("X-Cycles-Event-Type", ""),
+                  })
+                  self.send_response(200)
+                  self.end_headers()
+                  self.wfile.write(b"OK")
+              def do_GET(self):
+                  self.send_response(200)
+                  self.end_headers()
+                  self.wfile.write(json.dumps(Handler.received).encode())
+              def log_message(self, *a): pass
+
+          HTTPServer(("", 9999), Handler).serve_forever()
+          ' &
+          sleep 1
+          curl -sf http://localhost:9999/ > /dev/null
+          echo "Webhook receiver running on :9999"
+
+      - name: Run event server integration tests
+        run: |
+          ADMIN_URL=http://localhost:7979
+
+          echo "=== Create webhook subscription ==="
+          WEBHOOK_RESP=$(curl -s -w "\nHTTP_CODE:%{http_code}" -X POST $ADMIN_URL/v1/webhooks \
+            -H "Content-Type: application/json" \
+            -H "X-Cycles-API-Key: $CYCLES_API_KEY" \
+            -d '{
+              "name": "nightly-test-webhook",
+              "url": "http://localhost:9999/webhook",
+              "event_types": ["budget.created", "reservation.denied", "tenant.created"],
+              "signing_secret": "nightly-test-secret"
+            }')
+          echo "Webhook response: $WEBHOOK_RESP"
+          echo "$WEBHOOK_RESP" | grep -q "HTTP_CODE:2" || { echo "Webhook creation failed"; exit 1; }
+          SUB_ID=$(echo "$WEBHOOK_RESP" | head -1 | jq -r '.subscription.subscription_id')
+          echo "Subscription ID: $SUB_ID"
+
+          echo "=== Test webhook delivery (end-to-end via event server) ==="
+          TEST_RESP=$(curl -s -w "\nHTTP_CODE:%{http_code}" -X POST "$ADMIN_URL/v1/webhooks/$SUB_ID/test" \
+            -H "X-Cycles-API-Key: $CYCLES_API_KEY")
+          echo "Test response: $TEST_RESP"
+          echo "$TEST_RESP" | grep -q "HTTP_CODE:2" || { echo "Webhook test failed"; exit 1; }
+          echo "$TEST_RESP" | head -1 | jq -e '.success == true' || { echo "Webhook test reported failure"; exit 1; }
+
+          echo "=== Verify webhook receiver got the delivery ==="
+          sleep 3
+          RECEIVED=$(curl -s http://localhost:9999/)
+          echo "Received webhooks: $RECEIVED"
+          COUNT=$(echo "$RECEIVED" | jq 'length')
+          [ "$COUNT" -ge 1 ] || { echo "No webhooks received by receiver"; exit 1; }
+          echo "$RECEIVED" | jq -e '.[0].signature | startswith("sha256=")' || { echo "Missing HMAC signature"; exit 1; }
+
+          echo "=== Verify event server health and metrics ==="
+          curl -sf http://localhost:7980/actuator/health | jq .
+          curl -sf http://localhost:7980/actuator/prometheus | grep -c "cycles_" || true
+
+          echo "Event server integration tests passed"
 
       # ── Rust integration tests ──────────────────────────────────────
       - name: Checkout Rust client
