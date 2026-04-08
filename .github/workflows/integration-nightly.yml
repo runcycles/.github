@@ -104,7 +104,15 @@ jobs:
             -H "X-Cycles-API-Key: $API_KEY" \
             -d '{"scope":"tenant:integration-test","unit":"USD_MICROCENTS","allocated":{"unit":"USD_MICROCENTS","amount":100000000}}')
           echo "Budget response: $BUDGET_RESPONSE"
-          echo "$BUDGET_RESPONSE" | grep -q "HTTP_CODE:2" || { echo "Budget creation failed"; exit 1; }
+          echo "$BUDGET_RESPONSE" | grep -q "HTTP_CODE:2" || { echo "USD_MICROCENTS budget creation failed"; exit 1; }
+
+          # Create TOKENS budget (for Rust client tests that use Amount::tokens())
+          TOKENS_BUDGET=$(curl -s -w "\nHTTP_CODE:%{http_code}" -X POST $ADMIN_URL/v1/admin/budgets \
+            -H "Content-Type: application/json" \
+            -H "X-Cycles-API-Key: $API_KEY" \
+            -d '{"scope":"tenant:integration-test","unit":"TOKENS","allocated":{"unit":"TOKENS","amount":1000000}}')
+          echo "Tokens budget response: $TOKENS_BUDGET"
+          echo "$TOKENS_BUDGET" | grep -q "HTTP_CODE:2" || { echo "TOKENS budget creation failed"; exit 1; }
 
       # ── Spring Boot demo app ────────────────────────────────────────
       - name: Checkout Spring Boot starter
