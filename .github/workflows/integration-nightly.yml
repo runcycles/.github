@@ -263,6 +263,13 @@ jobs:
       - name: Run event server integration tests
         run: |
           ADMIN_URL=http://localhost:7979
+          ADMIN_KEY=test-admin-key
+
+          echo "=== Allow HTTP webhook URLs for CI ==="
+          curl -s -X PUT $ADMIN_URL/v1/admin/config/webhook-security \
+            -H "Content-Type: application/json" \
+            -H "X-Admin-API-Key: $ADMIN_KEY" \
+            -d '{"allow_http": true}' | jq .
 
           echo "=== Create webhook subscription ==="
           WEBHOOK_RESP=$(curl -s -w "\nHTTP_CODE:%{http_code}" -X POST $ADMIN_URL/v1/webhooks \
