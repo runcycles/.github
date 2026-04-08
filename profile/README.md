@@ -24,6 +24,7 @@ New to Cycles? Start with the protocol, then choose the implementation surface y
 
 - [docs](https://github.com/runcycles/docs) — documentation site (runcycles.io) with quickstarts, integration guides, and protocol reference
 - [cycles-protocol](https://github.com/runcycles/cycles-protocol) — protocol definitions, semantics, and API contract
+- [cycles-dashboard](https://github.com/runcycles/cycles-dashboard) — Cycles Admin UI dashboard, read only
 - [cycles-server](https://github.com/runcycles/cycles-server) — reference enforcement server for reservations, commits, releases, and balances
 - [cycles-server-admin](https://github.com/runcycles/cycles-server-admin) — tenant, budget, API key, funding, and audit management
 - [cycles-server-events](https://github.com/runcycles/cycles-server-events) — asynchronous webhook /event dispatch with HMAC signing, retry, and pluggable transports
