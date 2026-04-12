@@ -107,7 +107,7 @@ jobs:
           KEY_RESPONSE=$(curl -s -X POST $ADMIN_URL/v1/admin/api-keys \
             -H "Content-Type: application/json" \
             -H "X-Admin-API-Key: $ADMIN_KEY" \
-            -d '{"tenant_id":"integration-test","name":"integration-key","permissions":["reservations:create","reservations:commit","reservations:release","reservations:extend","reservations:list","balances:read","balances:write","budgets:read","budgets:write","admin:read","admin:write","webhooks:create","webhooks:read","webhooks:write","webhooks:delete","events:read"]}')
+            -d '{"tenant_id":"integration-test","name":"integration-key","permissions":["admin:read","admin:write"]}')
           echo "Key response: $KEY_RESPONSE"
           API_KEY=$(echo "$KEY_RESPONSE" | jq -r '.key_secret')
           if [ -z "$API_KEY" ] || [ "$API_KEY" = "null" ]; then
