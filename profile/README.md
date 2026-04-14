@@ -22,19 +22,26 @@ Runcycles enforces one rule:
 
 New to Cycles? Start with the protocol, then choose the implementation surface you need.
 
+### Core Platform
 - [docs](https://github.com/runcycles/docs) — documentation site (runcycles.io) with quickstarts, integration guides, and protocol reference
 - [cycles-protocol](https://github.com/runcycles/cycles-protocol) — protocol definitions, semantics, and API contract
-- [cycles-dashboard](https://github.com/runcycles/cycles-dashboard) — Operational admin UI for the Cycles budget governance platform
 - [cycles-server](https://github.com/runcycles/cycles-server) — reference enforcement server for reservations, commits, releases, and balances
 - [cycles-server-admin](https://github.com/runcycles/cycles-server-admin) — tenant, budget, API key, funding, and audit management
 - [cycles-server-events](https://github.com/runcycles/cycles-server-events) — asynchronous webhook /event dispatch with HMAC signing, retry, and pluggable transports
+- [cycles-dashboard](https://github.com/runcycles/cycles-dashboard) — Operational admin UI for the Cycles budget governance platform
+
+### Client SDKs
 - [cycles-spring-boot-starter](https://github.com/runcycles/cycles-spring-boot-starter) — easiest way to integrate Cycles into Spring AI / Java apps
 - [cycles-client-python](https://github.com/runcycles/cycles-client-python) — integrate Cycles budget and risk control into Python apps
 - [cycles-client-typescript](https://github.com/runcycles/cycles-client-typescript) — budget and risk control for Node.js / Vercel AI / LangChain/ OpenAI
 - [cycles-client-rust](https://github.com/runcycles/cycles-client-rust) — integrate Cycles budget and risk control into Rust AI agents
+
+### Integrations
 - [cycles-mcp-server](https://github.com/runcycles/cycles-mcp-server) — MCP server that gives AI agents runtime budget control — reserve, commit, and release
 - [cycles-openai-agents](https://github.com/runcycles/cycles-openai-agents) — Budget, risk runtime authority for the OpenAI Agents SDK, powered by Cycles
 - [cycles-openclaw-budget-guard](https://github.com/runcycles/cycles-openclaw-budget-guard) — OpenClaw plugin for budget-aware model and tool execution using Cycles
+
+### Demos
 - [cycles-runaway-demo](https://github.com/runcycles/cycles-runaway-demo) — self-contained demo showing a runaway agent failure mode and Runcycles stopping it
 - [cycles-agent-action-authority-demo](https://github.com/runcycles/cycles-agent-action-authority-demo) — self-contained demo showing Cycles stopping agent performing next email, CRM action
 
