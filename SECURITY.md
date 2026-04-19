@@ -38,9 +38,12 @@ This policy covers all repositories in the [runcycles](https://github.com/runcyc
 
 - `cycles-server` — enforcement server (Redis, Lua scripts, Spring Boot)
 - `cycles-server-admin` — admin API (tenants, budgets, API keys)
+- `cycles-server-events` — event ingestion + usage aggregation service
+- `cycles-dashboard` — operator web UI (Vue 3 SPA served via nginx)
 - `cycles-protocol` — protocol specification
 - `cycles-client-python` — Python SDK
 - `cycles-client-typescript` — TypeScript SDK
+- `cycles-client-rust` — Rust SDK
 - `cycles-spring-boot-starter` — Spring Boot starter
 - `cycles-mcp-server` — MCP server
 - `cycles-openai-agents` — OpenAI Agents SDK integration
