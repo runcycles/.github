@@ -1,22 +1,14 @@
-# Runcycles — Rein in autonomous chaos ⚡️
+# Runcycles — Runtime budget and action authority for AI agents
 
-**The production runtime for the Cycles protocol.**
+**Open-source enforcement layer for AI agent governance: hard limits on cost, risk, and tool actions before LLM agents execute.** Multi-tenant, concurrency-safe, and self-hostable. SDKs for Python, TypeScript, Rust, and Spring Boot; MCP server for Claude Desktop, Cursor, and Windsurf.
 
-**Cycles** defines how agents reserve budget, commit spend, and release unused reservations. 
+- **What** — a protocol-level runtime that enforces `reserve → execute → commit / release` on every AI agent call, preventing runaway spend, unauthorized tool actions, and tenant boundary violations before they happen.
+- **Who** — AI platform teams, agent framework builders, and SaaS operators running autonomous LLM agents in production. Production-grade for OpenAI, Anthropic, MCP, OpenAI Agents SDK, LangChain, and CrewAI workloads.
+- **Why** — rate limits and dashboards observe failure after the fact. Cycles prevents it — by making cost and action authority a property of the runtime, not the application.
 
-**Runcycles** enforces those rules in production — atomically, under concurrency, across retries.
+👉 **Start with [Cycles Docs](https://runcycles.io)** · **[Protocol Spec](https://github.com/runcycles/cycles-protocol)** · **[Reference Server](https://github.com/runcycles/cycles-server)** · **[Runaway Demo](https://github.com/runcycles/cycles-runaway-demo)**
 
->Think: **Cycles** is an open protocol. **Runcycles** is your server.
-
-Runcycles enforces one rule:
-
-**reserve exposure before execution, then commit actual usage or release the remainder afterward.**
-
-👉 **Start with [Cycles Docs](https://runcycles.github.io/docs)**  
-👉 **Experience Cycles with [Runaway Demo](https://github.com/runcycles/cycles-runaway-demo)**
-
-👉 **Read the [Protocol](https://github.com/runcycles/cycles-protocol)**  
-👉 **Deploy the [Reference Server](https://github.com/runcycles/cycles-server)**
+---
 
 ## Start here
 
