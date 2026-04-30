@@ -112,14 +112,13 @@ Release unused reservation when work is canceled or costs less than expected.
 Apply budgets across scopes such as:
 
 - tenant
-- environment
-- application
+- workspace
+- app
 - workflow
 - agent
-- tool
-- run
+- toolset
 
-A request can be evaluated against both local limits and inherited parent limits.
+A request can be evaluated against both local limits and inherited parent limits. Run-level budgets can be modeled through workflow or agent scope patterns where needed.
 
 ### Idempotency under retries and concurrency
 
