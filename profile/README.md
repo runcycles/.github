@@ -10,6 +10,37 @@
 
 ---
 
+## Architecture at a glance
+
+```mermaid
+flowchart LR
+  AGENT["AI agent"]
+  SDK["Cycles SDK"]
+  RUNTIME["Cycles Runtime<br/>authority check"]
+  ACTION["LLM · tool · API · write"]
+
+  AGENT -->|"intent + estimate"| SDK
+  SDK -->|"1. reserve"| RUNTIME
+  RUNTIME -->|"ALLOW or DENY"| SDK
+  SDK -->|"2. execute (if ALLOW)"| ACTION
+  ACTION -->|"actual usage"| SDK
+  SDK -->|"3. commit / release"| RUNTIME
+
+  classDef primary fill:#eef6ff,stroke:#2563eb,stroke-width:1px,color:#111827;
+  classDef runtime fill:#ecfdf5,stroke:#059669,stroke-width:1px,color:#111827;
+  classDef action fill:#f8fafc,stroke:#64748b,stroke-width:1px,color:#111827;
+
+  class AGENT,SDK primary;
+  class RUNTIME runtime;
+  class ACTION action;
+```
+
+The agent declares intent, the SDK reserves with the Cycles runtime, executes only if allowed, then commits actual usage or releases the reservation. Cycles is a synchronous authority check — not a proxy, not a workflow engine.
+
+> Want the full picture (admin server, dashboard, state store, events)? See **[ARCHITECTURE.md](../ARCHITECTURE.md)**.
+
+---
+
 ## Start here
 
 New to Cycles? Start with the protocol, then choose the implementation surface you need.
