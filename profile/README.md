@@ -33,12 +33,13 @@ flowchart LR
   RUNTIME -->|"ALLOW or DENY"| SDK
   SDK -->|"3. commit / release"| RUNTIME
 
-  classDef primary fill:#eef6ff,stroke:#2563eb,stroke-width:1px,color:#111827;
-  classDef runtime fill:#ecfdf5,stroke:#059669,stroke-width:1px,color:#111827;
+  %% Colors group nodes by ownership: blue = your code, teal = Cycles, grey = downstream actions.
+  classDef agent fill:#eef6ff,stroke:#2563eb,stroke-width:1px,color:#111827;
+  classDef cycles fill:#ecfdf5,stroke:#059669,stroke-width:1px,color:#111827;
   classDef action fill:#f8fafc,stroke:#64748b,stroke-width:1px,color:#111827;
 
-  class AGENT,SDK primary;
-  class RUNTIME runtime;
+  class AGENT agent;
+  class SDK,RUNTIME cycles;
   class ACTION action;
 ```
 
