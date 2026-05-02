@@ -37,7 +37,7 @@ flowchart LR
 
 The agent declares intent, the SDK reserves with the Cycles runtime, executes only if allowed, then commits actual usage or releases the reservation. Cycles is a synchronous authority check — not a proxy, not a workflow engine.
 
-> Want the full picture (admin server, dashboard, state store, events)? See **[ARCHITECTURE.md](../ARCHITECTURE.md)**.
+> Want the full picture (admin server, dashboard, state store, events)? See **[ARCHITECTURE.md](https://github.com/runcycles/.github/blob/main/ARCHITECTURE.md)**.
 
 ---
 
