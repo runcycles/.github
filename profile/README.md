@@ -1,5 +1,7 @@
 # Runcycles — Runtime budget and action authority for AI agents
 
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://github.com/runcycles/.github/blob/main/LICENSE) [![Latest release](https://img.shields.io/github/v/release/runcycles/cycles-server?label=cycles-server&color=00C9A7)](https://github.com/runcycles/cycles-server/releases) [![CI](https://github.com/runcycles/cycles-server/actions/workflows/ci.yml/badge.svg)](https://github.com/runcycles/cycles-server/actions/workflows/ci.yml) [![Coverage](https://img.shields.io/badge/coverage-95%25%2B-brightgreen)](https://github.com/runcycles/cycles-server/blob/main/cycles-protocol-service/pom.xml)
+
 **Open-source enforcement layer for AI agent governance: hard limits on cost, risk, and tool actions before LLM agents execute.** Multi-tenant, concurrency-safe, and self-hostable. SDKs for Python, TypeScript, Rust, and Spring Boot; MCP server for Claude Desktop, Cursor, and Windsurf.
 
 - **What** — a protocol-level runtime that enforces `reserve → execute → commit / release` on every AI agent call, preventing runaway spend, unauthorized tool actions, and tenant boundary violations before they happen.
@@ -46,6 +48,56 @@ flowchart LR
 The agent declares intent, the SDK reserves with the Cycles runtime, executes only if allowed, then commits actual usage or releases the reservation. Cycles is a synchronous authority check — not a proxy, not a workflow engine.
 
 > Want the full picture (admin server, dashboard, state store, events)? See **[ARCHITECTURE.md](https://github.com/runcycles/.github/blob/main/ARCHITECTURE.md)**.
+
+---
+
+## See it stop a runaway agent
+
+![Cycles stops a runaway agent — $10 unguarded vs $1 with Cycles, projected to $77K/month per stuck agent](https://github.com/runcycles/cycles-runaway-demo/raw/main/demo.gif)
+
+A runaway agent racks up ~$10 in 12 seconds with no enforcement. The same agent under Cycles stops at the budget limit — $1.00. Full demo: **[cycles-runaway-demo](https://github.com/runcycles/cycles-runaway-demo)**.
+
+---
+
+## Try it
+
+### MCP — zero code (Claude Desktop, Claude Code, Cursor, Windsurf)
+
+Add to your `claude_desktop_config.json` (or equivalent):
+
+```json
+{
+  "mcpServers": {
+    "cycles": {
+      "command": "npx",
+      "args": ["-y", "@runcycles/mcp-server"],
+      "env": { "CYCLES_MOCK": "true" }
+    }
+  }
+}
+```
+
+`CYCLES_MOCK=true` runs against an in-process mock so you can try it without deploying the server. Swap for `CYCLES_BASE_URL` + `CYCLES_API_KEY` to point at a real Cycles deployment. Full setup: **[cycles-mcp-server](https://github.com/runcycles/cycles-mcp-server)**.
+
+### Python — decorator on your existing LLM calls
+
+```bash
+pip install runcycles
+```
+
+```python
+from runcycles import CyclesClient, CyclesConfig, set_default_client, cycles
+
+set_default_client(CyclesClient(CyclesConfig.from_env()))
+
+@cycles(estimate=1000, action_kind="llm.completion", action_name="gpt-4")
+def summarize(text: str) -> str:
+    return openai.chat.completions.create(...)  # your existing LLM call
+```
+
+The `@cycles` decorator reserves budget before the function runs, commits actuals on return, and releases on exception. Set `CYCLES_BASE_URL`, `CYCLES_API_KEY`, and `CYCLES_TENANT` in your env.
+
+Other SDKs: **[TypeScript](https://github.com/runcycles/cycles-client-typescript)** · **[Spring Boot / Java](https://github.com/runcycles/cycles-spring-boot-starter)** · **[Rust](https://github.com/runcycles/cycles-client-rust)**.
 
 ---
 
