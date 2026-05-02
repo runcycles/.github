@@ -12,65 +12,32 @@
 
 ## Architecture at a glance
 
-Cycles sits between agent runtimes and downstream actions. Agents ask Cycles for authority before costly or risky work runs. If allowed, the action executes; afterward the agent commits actual usage or releases the reservation.
-
 ```mermaid
 flowchart LR
-  %% =========================
-  %% Agent side
-  %% =========================
-  subgraph APP["Agent application / workflow runtime"]
-    AGENT["AI agent"]
-    SDK["Cycles SDK / middleware<br/>Python · TypeScript · Java · Rust · MCP"]
-    AGENT -->|"intent: subject + action + estimate"| SDK
-  end
+  AGENT["AI agent"]
+  SDK["Cycles SDK"]
+  RUNTIME["Cycles Runtime<br/>authority check"]
+  ACTION["LLM · tool · API · write"]
 
-  %% =========================
-  %% Enforcement path
-  %% =========================
-  SDK -->|"1. reserve before execution<br/>POST /v1/reservations"| RUNTIME["Cycles Runtime Server<br/>pre-execution authority"]
-  RUNTIME -->|"ALLOW + reservation_id<br/>or DENY + reason"| SDK
-  SDK -.->|"on DENY: skip + surface reason"| AGENT
+  AGENT -->|"intent + estimate"| SDK
+  SDK -->|"1. reserve"| RUNTIME
+  RUNTIME -->|"ALLOW or DENY"| SDK
+  SDK -->|"2. execute (if ALLOW)"| ACTION
+  ACTION -->|"actual usage"| SDK
+  SDK -->|"3. commit / release"| RUNTIME
 
-  SDK -->|"2. execute"| ACTIONS["Downstream actions<br/>LLMs · tools · APIs · email · DB writes · jobs"]
-  ACTIONS -->|"actual usage / outcome"| SDK
-
-  SDK -->|"3a. commit actual usage"| RUNTIME
-  SDK -->|"3b. release on cancel / failure"| RUNTIME
-
-  %% =========================
-  %% State and governance
-  %% =========================
-  RUNTIME -->|"atomic reserve / commit / release"| STORE["State store<br/>budgets · reservations · balances · quota counters"]
-
-  ADMIN["Cycles Admin Server<br/>tenants · budgets · policies · API keys"] --> STORE
-  DASH["Cycles Dashboard<br/>operators / SaaS admins"] --> ADMIN
-
-  RUNTIME -->|"events"| EVENTS["Events / webhooks<br/>denials · overages · thresholds · audit trail"]
-  ADMIN -->|"governance events"| EVENTS
-
-  %% =========================
-  %% Styles
-  %% =========================
   classDef primary fill:#eef6ff,stroke:#2563eb,stroke-width:1px,color:#111827;
   classDef runtime fill:#ecfdf5,stroke:#059669,stroke-width:1px,color:#111827;
-  classDef state fill:#fff7ed,stroke:#ea580c,stroke-width:1px,color:#111827;
-  classDef external fill:#f8fafc,stroke:#64748b,stroke-width:1px,color:#111827;
+  classDef action fill:#f8fafc,stroke:#64748b,stroke-width:1px,color:#111827;
 
   class AGENT,SDK primary;
-  class RUNTIME,ADMIN,DASH runtime;
-  class STORE state;
-  class ACTIONS,EVENTS external;
+  class RUNTIME runtime;
+  class ACTION action;
 ```
 
-> Works with LangGraph, CrewAI, OpenAI Agents SDK, MCP clients (Claude Desktop, Cursor, Windsurf), and custom runtimes via the SDKs.
+The agent declares intent, the SDK reserves with the Cycles runtime, executes only if allowed, then commits actual usage or releases the reservation. Cycles is a synchronous authority check — not a proxy, not a workflow engine.
 
-**The key idea:** Cycles is not a proxy and not a workflow engine. It does not execute tools or inspect payloads. It provides a synchronous authority check around actions that create cost, risk, or side effects.
-
-1. **Reserve** estimated exposure before the action runs.
-2. **Execute** the LLM/tool/API call only if Cycles allows it.
-3. **Commit** actual usage, or **release** the reservation if the action failed or was canceled.
-4. **Enforce** budgets, action policies, tenant boundaries, retries, and concurrency from one runtime control point.
+> Want the full picture (admin server, dashboard, state store, events)? See **[ARCHITECTURE.md](../ARCHITECTURE.md)**.
 
 ---
 
