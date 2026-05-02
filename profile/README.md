@@ -126,183 +126,53 @@ New to Cycles? Start with the protocol, then choose the implementation surface y
 
 ### Demos
 - [cycles-runaway-demo](https://github.com/runcycles/cycles-runaway-demo) — self-contained demo showing a runaway agent failure mode and Runcycles stopping it
-- [cycles-agent-action-authority-demo](https://github.com/runcycles/cycles-agent-action-authority-demo) — self-contained demo showing Cycles stopping agent performing next email, CRM action
+- [cycles-agent-action-authority-demo](https://github.com/runcycles/cycles-agent-action-authority-demo) — self-contained demo showing Cycles stopping an agent performing the next email or CRM action
 
-👉 Learn more: **[runcycles.io](https://runcycles.io)**
+---
 
 ## Why Runcycles exists
 
-Autonomous systems do not fail like traditional software.
+Autonomous systems do not fail like traditional software. They loop, retry, fan out across tools and models, continue after partial failure, and create costs and side effects that are difficult to predict.
 
-They loop.  
-They retry.  
-They fan out across tools and models.  
-They continue after partial failure.  
-They create costs and side effects that are difficult to predict in advance.
+Traditional controls — rate limits, timeouts, quotas — manage **velocity**. They do not reliably bound **total exposure**. Runcycles is the runtime layer that does.
 
-Traditional controls like rate limits, timeouts, and quotas help manage **velocity**.
+## What this is
 
-They do not reliably bound **total exposure**.
+**Cycles** is an open, language-agnostic protocol for deterministic exposure accounting in autonomous systems. It defines reserve → commit / release semantics, hierarchical scopes, idempotency under retries, and shadow evaluation before hard enforcement.
 
-Runcycles exists to enforce bounded execution under real production conditions.
+**Runcycles** is the production implementation: a runtime that enforces Cycles semantics over real failure modes — long-running agent loops, tool-calling workflows, retries, crashes, and concurrency.
 
-## What is Cycles?
-
-**Cycles** is a protocol for deterministic exposure accounting in autonomous systems.
-
-It defines:
-
-- reserve → commit / release semantics
-- hierarchical scopes for budgets and policy inheritance
-- idempotent behavior under retries and concurrency
-- shadow evaluation before hard enforcement
-- portable invariants across runtimes and languages
-
-Cycles is protocol-first and runtime-agnostic.
-
-## What is Runcycles?
-
-Runcycles is a production runtime that enforces Cycles semantics.
-
-It is built for systems with:
-
-- long-running agent loops
-- tool-calling workflows
-- multi-step decision systems
-- normal retries, crashes, and concurrency
-
-Runcycles turns Cycles from a specification into something you can deploy.
+Think of it as a **budget authority for autonomous execution**: the layer that decides whether an action may proceed, how much exposure to reserve for it, and how that usage is reconciled afterward. Not a billing dashboard, not a workflow engine, not a rate limiter.
 
 ## How it works
 
-At a high level, Runcycles enforces a simple pattern:
+The diagram above shows the synchronous loop. In one sentence: the SDK reserves estimated exposure with the Cycles runtime *before* the agent's action runs, executes only on `ALLOW`, then commits actual usage or releases the reservation.
 
-1. **Declare intent**
-2. **Reserve exposure**
-3. **Execute**
-4. **Commit actual usage or release the remainder**
-
-This makes it possible to:
-
-- stop work before budgets are exceeded
-- avoid double-spend under retries
-- reconcile actual vs estimated usage
-- enforce limits across parent and child scopes
-- observe and tune policies before blocking production traffic
+This makes it possible to stop work before budgets are exceeded, avoid double-spend under retries, reconcile actual vs estimated usage, enforce limits across parent and child scopes, and run policies in shadow before blocking production traffic.
 
 ## What Runcycles enforces
 
-### Deterministic reserve → commit control
+- **Deterministic reserve → commit control** — reserve before execution, commit actual usage after, release on cancel or under-spend
+- **Hierarchical budgeting** across `tenant / workspace / app / workflow / agent / toolset` scopes, with inherited parent limits
+- **Idempotency under retries and concurrency** — duplicate requests, worker crashes, partial retries, delayed commits all behave correctly
+- **Shadow mode and progressive rollout** — simulate and tune policies before turning on hard enforcement
+- **Failure-aware enforcement** — designed for systems where crashes and partial completion are normal
 
-Reserve exposure before execution.  
-Commit actual usage after execution.  
-Release unused reservation when work is canceled or costs less than expected.
+## Who it's for
 
-### Hierarchical budgeting
-
-Apply budgets across scopes such as:
-
-- tenant
-- workspace
-- app
-- workflow
-- agent
-- toolset
-
-A request can be evaluated against both local limits and inherited parent limits. Run-level budgets can be modeled through workflow or agent scope patterns where needed.
-
-### Idempotency under retries and concurrency
-
-Runcycles is built for real failure modes:
-
-- duplicate requests
-- worker crashes
-- partial retries
-- concurrent execution
-- delayed commits
-
-### Shadow mode and progressive rollout
-
-Simulate, observe, and tune policies before turning on hard enforcement.
-
-### Failure-aware enforcement
-
-Runcycles is designed for systems where retries, crashes, partial completion, and concurrency are normal operating conditions.
-
-## Typical use cases
-
-Runcycles is useful when you need deterministic control over systems that:
-
-- call LLMs repeatedly or recursively
-- invoke tools with external cost or side effects
-- execute background jobs or long-lived workflows
-- operate across tenants with separate budgets
-- need hard boundaries around autonomous execution
-- must distinguish observation from enforcement
-
-## Who Runcycles is for
-
-Runcycles is for teams building autonomous systems that can create meaningful cost, side effects, or operational risk.
-
-Typical users include:
+Teams building autonomous systems that can create meaningful cost, side effects, or operational risk:
 
 - **AI platform teams** enforcing tenant and workload budgets
 - **Agent developers** building looped or tool-calling workflows
-- **Spring AI / JVM teams** adding hard budget limits to production systems
-- **SaaS teams** needing multi-tenant usage isolation and controls
-- **Infrastructure engineers** handling retries, concurrency, and partial failure safely
+- **Spring AI / JVM teams** adding hard budget limits to production
+- **SaaS operators** needing multi-tenant usage isolation
 - **Gateway builders** adding reservation and commit semantics to AI traffic
 
-Runcycles is most useful when you need more than rate limits or dashboards — you need **pre-execution budget enforcement**.
+It governs anything that creates cost, risk, or irreversible side effects — LLM and inference calls, external APIs, database writes, message dispatch, payments, deployments, workflow fan-out.
 
-## Quick mental model
-
-Think of Runcycles as a **budget authority for autonomous execution**.
-
-Not a billing dashboard.  
-Not a workflow engine.  
-Not a rate limiter.
-
-It is the runtime layer that decides whether an action may proceed, how much exposure is reserved for it, and how that usage is reconciled afterward.
-
-## The ecosystem
-
-### Cycles Protocol
-The open, language-agnostic specification for exposure accounting, reservations, commits, releases, scopes, and invariants.
-
-### Runcycles Runtime
-A production implementation that enforces Cycles semantics efficiently.
-
-### SDKs and clients
-Client libraries for integrating Cycles into applications and runtimes.
-
-Current implementation focus includes:
-
-- [Python](https://github.com/runcycles/cycles-client-python)
-- [Rust](https://github.com/runcycles/cycles-client-rust)
-- [TypeScript Node.js / Next.js](https://github.com/runcycles/cycles-client-typescript)
-- [Java / Spring Boot](https://github.com/runcycles/cycles-spring-boot-starter)
-
-Additional language clients can be added without changing the protocol.
-
-## Where Runcycles fits
-
-Runcycles integrates with systems that produce cost, risk, or irreversible side effects, including:
-
-- LLM and inference calls
-- external APIs
-- database writes
-- message dispatch
-- payments
-- deployments
-- workflow fan-out
-- EVM and other blockchain transactions
-
-Web3 is one surface area, not a requirement.
+Use it when you need hard spend boundaries, pre-execution budget checks, retry-safe accounting, tenant-aware limits, hierarchical policy control, or progressive rollout from shadow to enforcement. **If all you need is request throttling or usage analytics, Runcycles is not the right tool.**
 
 ## What Runcycles is not
-
-Runcycles is not:
 
 - a billing system
 - a token or rewards engine
@@ -311,26 +181,9 @@ Runcycles is not:
 - a generic workflow scheduler
 - an AI safety silver bullet
 
-Its purpose is specific:
-
-**make autonomous exposure explicit, bounded, and enforceable.**
-
-## When to use Runcycles
-
-Use Runcycles when your system needs:
-
-- hard spend boundaries
-- pre-execution budget checks
-- retry-safe accounting
-- tenant-aware limits
-- hierarchical policy control
-- progressive rollout from shadow mode to enforcement
-
-If all you need is request throttling or simple usage analytics, Runcycles is probably not the right tool.
+Its purpose is specific: **make autonomous exposure explicit, bounded, and enforceable.**
 
 ## Design principles
-
-Runcycles is built around a few core ideas:
 
 - **account before enforce**
 - **reserve before execute**
@@ -342,13 +195,12 @@ Runcycles is built around a few core ideas:
 
 ## Status
 
-Runcycles is under active development.
-
-The protocol is stabilizing through real implementation work and will evolve with strong compatibility discipline as it moves toward v1.
+Runcycles is under active development. The protocol is stabilizing through real implementation work and will evolve with strong compatibility discipline as it moves toward v1. See [CHANGELOG.md](https://github.com/runcycles/cycles-server/blob/main/CHANGELOG.md) on `cycles-server` for the current release cadence.
 
 ## Learn more
 
-- [Cycles Manifesto](./MANIFESTO.md)
-- [Cycles Docs and API Reference](https://runcycles.github.io/docs)
+- **[runcycles.io](https://runcycles.io)** — full documentation, API reference, integration guides
+- [Cycles Manifesto](./MANIFESTO.md) — the longer "why"
+- [ARCHITECTURE.md](https://github.com/runcycles/.github/blob/main/ARCHITECTURE.md) — full system diagram with admin server, dashboard, state store, and event bus
 
-If you are building autonomous systems and need deterministic control over exposure, Runcycles is the runtime layer for that job.
+If you're building autonomous systems and need deterministic control over exposure, Runcycles is the runtime layer for that job.
