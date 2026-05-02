@@ -16,7 +16,13 @@ on:
         type: boolean
         default: true
 
-permissions: read-all
+# Reusable workflows can only request permissions the *caller* has granted.
+# `read-all` here breaks any caller that scopes permissions narrower than
+# read-all (e.g. cycles-server's ci.yml grants only `contents: read`), causing
+# `startup_failure` with: "workflow is requesting ... but is only allowed ...".
+# Match the caller-friendly pattern: declare only what we actually need.
+permissions:
+  contents: read
 
 jobs:
   lint-and-test:
