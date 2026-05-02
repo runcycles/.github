@@ -13,25 +13,33 @@
 ## Architecture at a glance
 
 ```mermaid
+---
+config:
+  look: handDrawn
+  theme: neutral
+---
 flowchart LR
-  AGENT["AI agent"]
-  SDK["Cycles SDK"]
-  RUNTIME["Cycles Runtime<br/>authority check"]
-  ACTION["LLM · tool · API · write"]
+  subgraph APP["Your agent runtime"]
+    direction TB
+    AGENT["AI agent"]
+    SDK["Cycles SDK"]
+    ACTION["LLM · tool · API · write"]
+    AGENT -->|"intent + estimate"| SDK
+    SDK -->|"2. execute (if ALLOW)"| ACTION
+    ACTION -->|"actual usage"| SDK
+  end
 
-  AGENT -->|"intent + estimate"| SDK
-  SDK -->|"1. reserve"| RUNTIME
+  SDK -->|"1. reserve"| RUNTIME["Cycles Runtime<br/>authority check"]
   RUNTIME -->|"ALLOW or DENY"| SDK
-  SDK -->|"2. execute (if ALLOW)"| ACTION
-  ACTION -->|"actual usage"| SDK
   SDK -->|"3. commit / release"| RUNTIME
 
-  classDef primary fill:#eef6ff,stroke:#2563eb,stroke-width:1px,color:#111827;
-  classDef runtime fill:#ecfdf5,stroke:#059669,stroke-width:1px,color:#111827;
+  %% Colors group nodes by ownership: blue = your code, teal = Cycles, grey = downstream actions.
+  classDef agent fill:#eef6ff,stroke:#2563eb,stroke-width:1px,color:#111827;
+  classDef cycles fill:#ecfdf5,stroke:#059669,stroke-width:1px,color:#111827;
   classDef action fill:#f8fafc,stroke:#64748b,stroke-width:1px,color:#111827;
 
-  class AGENT,SDK primary;
-  class RUNTIME runtime;
+  class AGENT agent;
+  class SDK,RUNTIME cycles;
   class ACTION action;
 ```
 

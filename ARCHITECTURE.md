@@ -7,25 +7,31 @@ For deployment topology, configuration, and component-level docs (ports, modules
 ## Full system diagram
 
 ```mermaid
+---
+config:
+  look: handDrawn
+  theme: neutral
+---
 flowchart LR
   %% =========================
-  %% Agent side
+  %% Agent side — everything inside this box runs in your application process
   %% =========================
   subgraph APP["Agent application / workflow runtime"]
+    direction TB
     AGENT["AI agent"]
     SDK["Cycles SDK / middleware<br/>Python · TypeScript · Java · Rust · MCP"]
+    ACTIONS["Downstream actions<br/>LLMs · tools · APIs · email · DB writes · jobs"]
     AGENT -->|"intent: subject + action + estimate"| SDK
+    SDK -->|"2. execute"| ACTIONS
+    ACTIONS -->|"actual usage / outcome"| SDK
   end
 
   %% =========================
-  %% Enforcement path
+  %% Enforcement path — crosses the agent runtime boundary
   %% =========================
   SDK -->|"1. reserve before execution<br/>POST /v1/reservations"| RUNTIME["Cycles Runtime Server<br/>pre-execution authority"]
   RUNTIME -->|"ALLOW + reservation_id<br/>or DENY + reason"| SDK
   SDK -.->|"on DENY: skip + surface reason"| AGENT
-
-  SDK -->|"2. execute"| ACTIONS["Downstream actions<br/>LLMs · tools · APIs · email · DB writes · jobs"]
-  ACTIONS -->|"actual usage / outcome"| SDK
 
   SDK -->|"3a. commit actual usage"| RUNTIME
   SDK -->|"3b. release on cancel / failure"| RUNTIME
@@ -42,17 +48,20 @@ flowchart LR
   ADMIN -->|"governance events"| EVENTS
 
   %% =========================
-  %% Styles
+  %% Styles — colors group nodes by ownership.
+  %% blue = your code; teal = Cycles components; orange = state; grey = downstream/external.
   %% =========================
-  classDef primary fill:#eef6ff,stroke:#2563eb,stroke-width:1px,color:#111827;
-  classDef runtime fill:#ecfdf5,stroke:#059669,stroke-width:1px,color:#111827;
+  classDef agent fill:#eef6ff,stroke:#2563eb,stroke-width:1px,color:#111827;
+  classDef cycles fill:#ecfdf5,stroke:#059669,stroke-width:1px,color:#111827;
   classDef state fill:#fff7ed,stroke:#ea580c,stroke-width:1px,color:#111827;
+  classDef action fill:#f8fafc,stroke:#64748b,stroke-width:1px,color:#111827;
   classDef external fill:#f8fafc,stroke:#64748b,stroke-width:1px,color:#111827;
 
-  class AGENT,SDK primary;
-  class RUNTIME,ADMIN,DASH runtime;
+  class AGENT agent;
+  class SDK,RUNTIME,ADMIN,DASH cycles;
   class STORE state;
-  class ACTIONS,EVENTS external;
+  class ACTIONS action;
+  class EVENTS external;
 ```
 
 > Works with LangGraph, CrewAI, OpenAI Agents SDK, MCP clients (Claude Desktop, Cursor, Windsurf), and custom runtimes via the SDKs.
