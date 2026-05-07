@@ -1,4 +1,4 @@
-# Runcycles — Runtime budget and action authority for AI agents
+# Cycles — Runtime budget and action authority for AI agents
 
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://github.com/runcycles/.github/blob/main/LICENSE) [![Latest release](https://img.shields.io/github/v/release/runcycles/cycles-server?label=cycles-server&color=00C9A7)](https://github.com/runcycles/cycles-server/releases) [![CI](https://github.com/runcycles/cycles-server/actions/workflows/ci.yml/badge.svg)](https://github.com/runcycles/cycles-server/actions/workflows/ci.yml) [![Coverage](https://img.shields.io/badge/coverage-95%25%2B-brightgreen)](https://github.com/runcycles/cycles-server/blob/main/cycles-protocol-service/pom.xml) [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/runcycles/cycles-server/badge)](https://scorecard.dev/viewer/?uri=github.com/runcycles/cycles-server) [![CII Best Practices](https://www.bestpractices.dev/projects/12734/badge)](https://www.bestpractices.dev/projects/12734)
 
@@ -130,11 +130,11 @@ New to Cycles? Start with the protocol, then choose the implementation surface y
 
 ---
 
-## Why Runcycles exists
+## Why Cycles exists
 
 Autonomous systems do not fail like traditional software. They loop, retry, fan out across tools and models, continue after partial failure, and create costs and side effects that are difficult to predict.
 
-Traditional controls — rate limits, timeouts, quotas — manage **velocity**. They do not reliably bound **total exposure**. Runcycles is the runtime layer that does.
+Traditional controls — rate limits, timeouts, quotas — manage **velocity**. They do not reliably bound **total exposure**. Cycles is the runtime layer that does.
 
 ## What this is
 
@@ -150,7 +150,7 @@ The diagram above shows the synchronous loop. In one sentence: the SDK reserves 
 
 This makes it possible to stop work before budgets are exceeded, avoid double-spend under retries, reconcile actual vs estimated usage, enforce limits across parent and child scopes, and run policies in shadow before blocking production traffic.
 
-## What Runcycles enforces
+## What Cycles enforces
 
 - **Deterministic reserve → commit control** — reserve before execution, commit actual usage after, release on cancel or under-spend
 - **Hierarchical budgeting** across `tenant / workspace / app / workflow / agent / toolset` scopes, with inherited parent limits
@@ -170,9 +170,9 @@ Teams building autonomous systems that can create meaningful cost, side effects,
 
 It governs anything that creates cost, risk, or irreversible side effects — LLM and inference calls, external APIs, database writes, message dispatch, payments, deployments, workflow fan-out.
 
-Use it when you need hard spend boundaries, pre-execution budget checks, retry-safe accounting, tenant-aware limits, hierarchical policy control, or progressive rollout from shadow to enforcement. **If all you need is request throttling or usage analytics, Runcycles is not the right tool.**
+Use it when you need hard spend boundaries, pre-execution budget checks, retry-safe accounting, tenant-aware limits, hierarchical policy control, or progressive rollout from shadow to enforcement. **If all you need is request throttling or usage analytics, Cycles is not the right tool.**
 
-## What Runcycles is not
+## What Cycles is not
 
 - a billing system
 - a token or rewards engine
@@ -195,7 +195,7 @@ Its purpose is specific: **make autonomous exposure explicit, bounded, and enfor
 
 ## Status
 
-Runcycles is under active development. The protocol is stabilizing through real implementation work and will evolve with strong compatibility discipline as it moves toward v1. See [CHANGELOG.md](https://github.com/runcycles/cycles-server/blob/main/CHANGELOG.md) on `cycles-server` for the current release cadence.
+Cycles is under active development. The protocol is stabilizing through real implementation work and will evolve with strong compatibility discipline as it moves toward v1. See [CHANGELOG.md](https://github.com/runcycles/cycles-server/blob/main/CHANGELOG.md) on `cycles-server` for the current release cadence.
 
 ## Learn more
 
@@ -203,4 +203,4 @@ Runcycles is under active development. The protocol is stabilizing through real 
 - [Cycles Manifesto](./MANIFESTO.md) — the longer "why"
 - [ARCHITECTURE.md](https://github.com/runcycles/.github/blob/main/ARCHITECTURE.md) — full system diagram with admin server, dashboard, state store, and event bus
 
-If you're building autonomous systems and need deterministic control over exposure, Runcycles is the runtime layer for that job.
+If you're building autonomous systems and need deterministic control over exposure, Cycles is the runtime layer for that job.
