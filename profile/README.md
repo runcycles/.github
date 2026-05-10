@@ -123,8 +123,9 @@ New to Cycles? Start with the protocol, then choose the implementation surface y
 - [cycles-mcp-server](https://github.com/runcycles/cycles-mcp-server) — MCP server that gives AI agents runtime budget control — reserve, commit, and release
 - [cycles-openai-agents](https://github.com/runcycles/cycles-openai-agents) — Budget, risk runtime authority for the OpenAI Agents SDK, powered by Cycles
 - [cycles-openclaw-budget-guard](https://github.com/runcycles/cycles-openclaw-budget-guard) — OpenClaw plugin for budget-aware model and tool execution using Cycles
-- [cycles-integration-examples-py](https://github.com/runcycles/cycles-client-python/tree/main/examples) — Integration examples (Python): OpenAI, Anthropic, LangChain, FastAPI
-- [cycles-integration-examples-ts](https://github.com/runcycles/cycles-client-typescript/tree/main/examples) — Integration examples (TypeScript): LangChain.js, Vercel AI, AWS Bedrock, Google
+- [langchain-runcycles](https://github.com/runcycles/langchain-runcycles) — LangChain agent middleware, pre-tool-call authorization, per-tenant budget enforcement using Cycles
+- [integration-examples-py](https://github.com/runcycles/cycles-client-python/tree/main/examples) — Integration examples (Python): OpenAI, Anthropic, LangChain, FastAPI
+- [integration-examples-ts](https://github.com/runcycles/cycles-client-typescript/tree/main/examples) — Integration examples (TypeScript): LangChain.js, Vercel AI, AWS Bedrock, Google
 
 ### Demos
 - [cycles-runaway-demo](https://github.com/runcycles/cycles-runaway-demo) — self-contained demo showing a runaway agent failure mode and Runcycles stopping it
