@@ -128,8 +128,8 @@ New to Cycles? Start with the protocol, then choose the implementation surface y
 - [integration-examples-ts](https://github.com/runcycles/cycles-client-typescript/tree/main/examples) — Integration examples (TypeScript): LangChain.js, Vercel AI, AWS Bedrock, Google
 
 ### Demos
-- [cycles-runaway-demo](https://github.com/runcycles/cycles-runaway-demo) — self-contained demo showing a runaway agent failure mode and Runcycles stopping it
-- [cycles-agent-action-authority-demo](https://github.com/runcycles/cycles-agent-action-authority-demo) — self-contained demo showing Cycles stopping an agent performing the next email or CRM action
+- [cycles-runaway-demo](https://github.com/runcycles/cycles-runaway-demo) — self-contained demo showing a runaway agent failure mode and Cycles stopping it
+- [cycles-agent-action-authority-demo](https://github.com/runcycles/cycles-agent-action-authority-demo) — self-contained demo where Cycles stops agent CRM action
 
 ---
 
