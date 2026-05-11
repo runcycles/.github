@@ -129,7 +129,7 @@ New to Cycles? Start with the protocol, then choose the implementation surface y
 
 ### Demos
 - [cycles-runaway-demo](https://github.com/runcycles/cycles-runaway-demo) — self-contained demo showing a runaway agent failure mode and Cycles stopping it
-- [cycles-agent-action-authority-demo](https://github.com/runcycles/cycles-agent-action-authority-demo) — self-contained demo where Cycles stops agent CRM action
+- [cycles-agent-action-authority-demo](https://github.com/runcycles/cycles-agent-action-authority-demo) — self-contained demo of blocking unapproved tool calls with Cycles
 
 ---
 
