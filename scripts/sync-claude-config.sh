@@ -3,8 +3,12 @@
 #
 # Usage: ./scripts/sync-claude-config.sh [--dry-run]
 #
-# This script copies shared-config/session-start-global-deny.sh to the
-# .claude/ directory of every sibling repo. Run from the .github repo root.
+# Copies the shared-config/ scripts to the .claude/ directory of every
+# sibling repo:
+#   - session-start-global-deny.sh   (synced to every repo in REPOS)
+#   - session-start-maven-proxy.sh   (synced only to Java repos in JAVA_REPOS)
+#
+# Run from the .github repo root.
 
 set -euo pipefail
 
@@ -18,10 +22,12 @@ if [[ "${1:-}" == "--dry-run" ]]; then
   DRY_RUN=true
 fi
 
+# Repos that receive the global-deny hook (all Claude-enabled Cycles repos).
 REPOS=(
   cycles-server
   cycles-server-admin
   cycles-spring-boot-starter
+  cycles-spring-ai-starter
   cycles-client-python
   cycles-client-typescript
   cycles-openai-agents
@@ -33,40 +39,61 @@ REPOS=(
   docs
 )
 
+# Java repos that additionally receive the maven-proxy hook.
+JAVA_REPOS=(
+  cycles-server
+  cycles-server-admin
+  cycles-spring-boot-starter
+  cycles-spring-ai-starter
+)
+
 SYNCED=0
 SKIPPED=0
 UPTODATE=0
 
-for repo in "${REPOS[@]}"; do
-  target_dir="$PARENT_DIR/$repo/.claude"
+# sync_one <repo> <filename>
+# Copies $SHARED_DIR/<filename> into $PARENT_DIR/<repo>/.claude/<filename> if
+# the destination is missing or differs. Honors DRY_RUN.
+sync_one() {
+  local repo="$1"
+  local filename="$2"
+  local target_dir="$PARENT_DIR/$repo/.claude"
 
   if [[ ! -d "$PARENT_DIR/$repo" ]]; then
-    echo "SKIP $repo — not cloned at $PARENT_DIR/$repo"
+    echo "SKIP $repo/$filename — not cloned at $PARENT_DIR/$repo"
     SKIPPED=$((SKIPPED + 1))
-    continue
+    return
   fi
 
   if [[ ! -d "$target_dir" ]]; then
-    echo "SKIP $repo — no .claude/ directory"
+    echo "SKIP $repo/$filename — no .claude/ directory"
     SKIPPED=$((SKIPPED + 1))
-    continue
+    return
   fi
 
-  src="$SHARED_DIR/session-start-global-deny.sh"
-  dst="$target_dir/session-start-global-deny.sh"
+  local src="$SHARED_DIR/$filename"
+  local dst="$target_dir/$filename"
 
   if diff -q "$src" "$dst" >/dev/null 2>&1; then
-    echo "OK   $repo — already up to date"
+    echo "OK   $repo/$filename — already up to date"
     UPTODATE=$((UPTODATE + 1))
   else
     if $DRY_RUN; then
-      echo "DIFF $repo — would update session-start-global-deny.sh"
+      echo "DIFF $repo/$filename — would update"
     else
       cp "$src" "$dst"
-      echo "SYNC $repo — updated session-start-global-deny.sh"
+      echo "SYNC $repo/$filename — updated"
     fi
     SYNCED=$((SYNCED + 1))
   fi
+}
+
+for repo in "${REPOS[@]}"; do
+  sync_one "$repo" session-start-global-deny.sh
+done
+
+for repo in "${JAVA_REPOS[@]}"; do
+  sync_one "$repo" session-start-maven-proxy.sh
 done
 
 echo ""
