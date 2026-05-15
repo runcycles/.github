@@ -106,7 +106,7 @@ Other SDKs: **[TypeScript](https://github.com/runcycles/cycles-client-typescript
 New to Cycles? Start with the protocol, then choose the implementation surface you need.
 
 ### Core Platform
-- [docs](https://github.com/runcycles/docs) — documentation site (runcycles.io) with quickstarts, integration guides, and protocol reference
+- [cycles-docs](https://github.com/runcycles/docs) — documentation site (runcycles.io) with quickstarts, integration guides, and protocol reference
 - [cycles-protocol](https://github.com/runcycles/cycles-protocol) — protocol definitions, semantics, and API contract
 - [cycles-server](https://github.com/runcycles/cycles-server) — reference enforcement server for reservations, commits, releases, and balances
 - [cycles-server-admin](https://github.com/runcycles/cycles-server-admin) — tenant, budget, API key, funding, and audit management
