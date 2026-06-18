@@ -148,7 +148,10 @@ jobs:
       - name: Build and start Spring Boot demo app (7955)
         working-directory: cycles-spring-boot-starter
         run: |
-          mvn -B package -DskipTests --file cycles-client-java-spring/pom.xml
+          # install (not package) so the freshly-built starter lands in ~/.m2 and
+          # the demo can resolve io.runcycles:cycles-client-java-spring at the
+          # current source version — which is not yet on Maven Central.
+          mvn -B install -DskipTests --file cycles-client-java-spring/pom.xml
           mvn -B package -DskipTests --file cycles-demo-client-java-spring/pom.xml
           java -Dcycles.base-url=http://localhost:7878 \
                -Dcycles.api-key=$CYCLES_API_KEY \
