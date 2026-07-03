@@ -60,15 +60,26 @@ jobs:
         run: mvn -B package -DskipTests
 
       # ── Start all servers ──────────────────────────────────────────
+      # Readiness polling notes:
+      # - Aggregate /actuator/health requires X-Admin-API-Key since
+      #   cycles-server v0.1.25.45 (and fails closed with 500 when no admin
+      #   key is configured). The liveness/readiness probes are deliberately
+      #   public and Redis-aware — poll those.
+      # - The loops FAIL the step on timeout. The previous tolerant loops
+      #   let a never-ready server slide through to a confusing failure in a
+      #   later test step (five nights of red before anyone saw the cause).
       - name: Start protocol server (7878)
         working-directory: cycles-server
         run: |
           java -Dredis.host=localhost -Dredis.port=6379 -Dredis.password= \
+               -Dadmin.api-key=test-admin-key \
                -jar cycles-protocol-service/cycles-protocol-service-api/target/*.jar &
+          ready=""
           for i in $(seq 1 30); do
-            curl -sf http://localhost:7878/actuator/health && break
+            if curl -sf http://localhost:7878/actuator/health/readiness; then ready=1; break; fi
             sleep 1
           done
+          [ -n "$ready" ] || { echo "protocol server not ready after 30s"; exit 1; }
 
       - name: Start admin server (7979)
         working-directory: cycles-server-admin
@@ -76,21 +87,27 @@ jobs:
           java -Dredis.host=localhost -Dredis.port=6379 -Dredis.password= \
                -Dadmin.api-key=test-admin-key -Dserver.port=7979 \
                -jar cycles-admin-service/cycles-admin-service-api/target/*.jar &
+          ready=""
           for i in $(seq 1 30); do
-            curl -sf http://localhost:7979/actuator/health && break
+            if curl -sf http://localhost:7979/actuator/health/readiness; then ready=1; break; fi
             sleep 1
           done
+          [ -n "$ready" ] || { echo "admin server not ready after 30s"; exit 1; }
 
+      # Event server actuator lives on the MANAGEMENT port (9980), not the
+      # main port (7980) — see cycles-server-events application.properties.
       - name: Start event server (7980)
         working-directory: cycles-server-events
         run: |
           java -Dredis.host=localhost -Dredis.port=6379 -Dredis.password= \
                -Dwebhook.secret.encryption-key= \
                -jar target/*.jar &
+          ready=""
           for i in $(seq 1 30); do
-            curl -sf http://localhost:7980/actuator/health && break
+            if curl -sf http://localhost:9980/actuator/health/readiness; then ready=1; break; fi
             sleep 1
           done
+          [ -n "$ready" ] || { echo "event server not ready after 30s"; exit 1; }
 
       # ── Provision test data via admin API ──────────────────────────
       - name: Provision tenant, API key, and budget
@@ -307,9 +324,9 @@ jobs:
           [ "$COUNT" -ge 1 ] || { echo "No webhooks received by receiver"; exit 1; }
           echo "$RECEIVED" | jq -e '.[0].signature | startswith("sha256=")' || { echo "Missing HMAC signature"; exit 1; }
 
-          echo "=== Verify event server health and metrics ==="
-          curl -sf http://localhost:7980/actuator/health | jq .
-          curl -sf http://localhost:7980/actuator/prometheus | grep -c "cycles_" || true
+          echo "=== Verify event server health and metrics (management port 9980) ==="
+          curl -sf http://localhost:9980/actuator/health/readiness | jq .
+          curl -sf http://localhost:9980/actuator/prometheus | grep -c "cycles_" || true
 
           echo "Event server integration tests passed"
 
