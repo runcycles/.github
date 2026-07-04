@@ -347,3 +347,48 @@ jobs:
           CYCLES_BASE_URL: http://localhost:7878
           CYCLES_TENANT: integration-test
         run: cargo test --test live_server_test -- --ignored
+
+  # The nightly is the fleet's only cross-repo canary; a silent failure is
+  # how the June 2026 /actuator/health lockdown regression ran red for six
+  # nights unnoticed. On failure this job creates (or comments on) a
+  # pinned-title issue so the break is visible without watching the Actions
+  # tab. The issue is reused across consecutive failures to avoid spam and
+  # closed manually once the run is green again.
+  alert-on-failure:
+    name: Alert on failure
+    needs: integration
+    if: failure()
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Create or update failure issue
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        with:
+          script: |
+            const title = 'Nightly Integration is failing';
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const body = `[Run ${context.runId}](${runUrl}) failed on ${new Date().toISOString().slice(0, 10)} (${context.eventName}).`;
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'nightly-failure',
+              per_page: 1,
+            });
+            if (issues.length > 0) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issues[0].number,
+                body,
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body: `${body}\n\nThis issue is auto-created by the nightly workflow's alert-on-failure job. Close it once the nightly is green again.`,
+                labels: ['nightly-failure'],
+              });
+            }
