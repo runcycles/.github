@@ -12,6 +12,9 @@ jobs:
   integration:
     name: Full-Stack Integration
     runs-on: ubuntu-latest
+    env:
+      # Deterministic test-only AES-256 key shared by admin and events.
+      WEBHOOK_SECRET_ENCRYPTION_KEY: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
     services:
       redis:
         image: redis:7-alpine
@@ -98,9 +101,11 @@ jobs:
       # main port (7980) — see cycles-server-events application.properties.
       - name: Start event server (7980)
         working-directory: cycles-server-events
+        env:
+          # The integration receiver intentionally listens on localhost.
+          WEBHOOK_URL_GUARD_ALLOW_PRIVATE_NETWORKS: "true"
         run: |
           java -Dredis.host=localhost -Dredis.port=6379 -Dredis.password= \
-               -Dwebhook.secret.encryption-key= \
                -jar target/*.jar &
           ready=""
           for i in $(seq 1 30); do
