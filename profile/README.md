@@ -121,6 +121,7 @@ New to Cycles? Start with the protocol, then choose the implementation surface y
 
 ### Integrations & Examples
 - [cycles-mcp-server](https://github.com/runcycles/cycles-mcp-server) — MCP server that gives AI agents runtime budget control — reserve, commit, and release
+- [cycles-claude-plugin](https://github.com/runcycles/cycles-claude-plugin) — Budget enforcement for Claude Code tool calls — PreToolUse gating, AI-agent cost control
 - [cycles-openai-agents](https://github.com/runcycles/cycles-openai-agents) — Budget, risk and runtime authority for the OpenAI Agents SDK
 - [cycles-openclaw-budget-guard](https://github.com/runcycles/cycles-openclaw-budget-guard) — OpenClaw plugin for budget-aware model and tool execution
 - [cycles-spring-ai-starter](https://github.com/runcycles/cycles-spring-ai-starter) — Budget, risk and runtime authority for Spring AI Agents (ChatClient)
