@@ -25,19 +25,19 @@ jobs:
     steps:
       # ── Checkout all servers ─────────────────────────────────────
       - name: Checkout cycles-server
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: runcycles/cycles-server
           path: cycles-server
 
       - name: Checkout cycles-server-admin
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: runcycles/cycles-server-admin
           path: cycles-server-admin
 
       - name: Checkout cycles-server-events
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: runcycles/cycles-server-events
           path: cycles-server-events
@@ -162,7 +162,7 @@ jobs:
 
       # ── Spring Boot demo app ────────────────────────────────────────
       - name: Checkout Spring Boot starter
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: runcycles/cycles-spring-boot-starter
           path: cycles-spring-boot-starter
@@ -216,7 +216,7 @@ jobs:
 
       # ── Python integration tests ───────────────────────────────────
       - name: Checkout Python client
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: runcycles/cycles-client-python
           path: cycles-client-python
@@ -237,7 +237,7 @@ jobs:
 
       # ── TypeScript integration tests ───────────────────────────────
       - name: Checkout TypeScript client
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: runcycles/cycles-client-typescript
           path: cycles-client-typescript
@@ -337,7 +337,7 @@ jobs:
 
       # ── Rust integration tests ──────────────────────────────────────
       - name: Checkout Rust client
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: runcycles/cycles-client-rust
           path: cycles-client-rust
